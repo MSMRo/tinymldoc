@@ -186,8 +186,9 @@ with open('gestos_modelo.tflite', 'wb') as f:
     st.subheader("Código Arduino para inferencia del modelo IMU")
     st.code("""#include <Arduino_LSM9DS1.h>
 #include "gestos_modelo.h"
+#include <TensorFlowLite.h>
 #include "tensorflow/lite/micro/all_ops_resolver.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
