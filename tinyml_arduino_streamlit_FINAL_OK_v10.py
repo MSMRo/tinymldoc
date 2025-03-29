@@ -158,7 +158,7 @@ void loop() {
 }""", language='c')
     st.subheader("Código Python para entrenamiento del modelo IMU")
     st.markdown("$ cat /dev/cu.usbmodem[nnnnn] > sensorlog.csv")
-    st.code(""" #$ cat /dev/cu.usbmodem[nnnnn] > sensorlog.csv
+    st.code("""
 import pandas as pd
 import numpy as np
 import tensorflow as tf
