@@ -157,7 +157,9 @@ void loop() {
   delay(100);
 }""", language='c')
     st.subheader("Código Python para entrenamiento del modelo IMU")
-    st.code("""import pandas as pd
+    st.markdown("$ cat /dev/cu.usbmodem[nnnnn] > sensorlog.csv")
+    st.code(""" #$ cat /dev/cu.usbmodem[nnnnn] > sensorlog.csv
+import pandas as pd
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
