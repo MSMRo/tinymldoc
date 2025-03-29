@@ -156,8 +156,10 @@ void loop() {
   }
   delay(100);
 }""", language='c')
+    st.markdown('**🔄 Adquirir datos desde la PC**')
+    st.code("""$ cat /dev/ttyACM0 > datos1.csv""", language='bash')
     st.subheader("Código Python para entrenamiento del modelo IMU")
-    st.markdown("$ cat /dev/cu.usbmodem[nnnnn] > sensorlog.csv")
+
     st.code("""
 import pandas as pd
 import numpy as np
