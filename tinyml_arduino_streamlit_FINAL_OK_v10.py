@@ -217,7 +217,10 @@ void loop() {
   delay(100);
 }""", language='c')
 
-    st.subheader('🔄 Adquirir datos desde la PC')
+    st.subheader('Adquirir datos desde la PC')
+    st.code("""
+pip install pyserial tqdm numpy pandas tensorflow
+""", language='bash')
     st.markdown("Se debe crear un archivo llamado utils.txt en el mismo folder del script de adquisición")
     st.code("""
 {'count': '0', 'file_name': 'ex1'}
