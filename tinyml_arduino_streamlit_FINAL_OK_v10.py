@@ -235,6 +235,7 @@ import numpy as np
 from tqdm import tqdm
 
 # Configuración del puerto serie
+PATH_ROOT = "./dataset/mov3/"
 PUERTO_COM = "COM4"            # Cambiar si es necesario (por ejemplo "COM3", "COM6" o "/dev/ttyUSB0" en Linux)
 BAUD_RATE = 115200             # Debe coincidir con Serial.begin del Arduino
 FILE_UTILS = "utils.txt"       # Archivo auxiliar que guarda el nombre base y el contador
@@ -259,7 +260,7 @@ ser = serial.Serial(PUERTO_COM, BAUD_RATE)
 
 # Captura de datos
 try:
-    with open(FILE_NAME, "w") as f:
+    with open(PATH_ROOT+FILE_NAME, "w") as f:
         for i in tqdm(range(n)):
             line = ser.readline().decode('utf-8', errors='ignore')  # Leer línea del puerto serial
             f.write(line.strip() + "\\n")  # Guardar en archivo sin espacios en blanco
@@ -366,8 +367,8 @@ model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=30, batch_s
 
 
 loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
-print(f"Pérdida en el conjunto de prueba: \{loss:.4f\}")
-print(f"Precisión en el conjunto de prueba: \{accuracy:.4f\}")
+print(f"Pérdida en el conjunto de prueba: {loss:.4f}")
+print(f"Precisión en el conjunto de prueba: {accuracy:.4f}")
 
 model.save("modelo_movimientos_lstm3.keras")
 
@@ -386,7 +387,7 @@ def convertir_tflite_a_header(nombre_tflite, nombre_header):
     # Abrimos el archivo header para escribir el arreglo
     with open(nombre_header, "w") as f:
         array_name = nombre_tflite.split('.')[0] + "_tflite"
-        f.write(f"const unsigned char \{array_name\}[] = {{\\n")
+        f.write(f"const unsigned char {array_name}[] = {{\\n")
 
         for i, byte in enumerate(contenido):
             if i % 12 == 0:
@@ -395,10 +396,10 @@ def convertir_tflite_a_header(nombre_tflite, nombre_header):
             if i < len(contenido) - 1:
                 f.write(", ")
             if (i + 1) % 12 == 0:
-                f.write("\n")
+                f.write("\\n")
 
-        f.write("\n};\n")
-        f.write(f"const unsigned int {array_name}_len = {len(contenido)};\n")
+        f.write("\\n};\\n")
+        f.write(f"const unsigned int {array_name}_len = {len(contenido)};\\n")
 
     print(f"✅ Archivo '{nombre_header}' generado con éxito.")
 
@@ -407,7 +408,34 @@ def convertir_tflite_a_header(nombre_tflite, nombre_header):
 convertir_tflite_a_header("modelo_conv1d.tflite", "modelo_conv1d.h")""", language='python')
 
     st.markdown('**🔄 Conversión del modelo TFLite a .h**')
-    st.code("""xxd -i modelo_nombre.tflite > modelo_nombre.h""", language='bash')
+    st.code("""
+def convertir_tflite_a_header(nombre_tflite, nombre_header):
+    with open(nombre_tflite, "rb") as f:
+        contenido = f.read()
+
+    # Abrimos el archivo header para escribir el arreglo
+    with open(nombre_header, "w") as f:
+        array_name = nombre_tflite.split('.')[0] + "_tflite"
+        f.write(f"const unsigned char {array_name}[] = {{\\n")
+
+        for i, byte in enumerate(contenido):
+            if i % 12 == 0:
+                f.write("  ")
+            f.write(f"0x{byte:02x}")
+            if i < len(contenido) - 1:
+                f.write(", ")
+            if (i + 1) % 12 == 0:
+                f.write("\\n")
+
+        f.write("\\n};\\n")
+        f.write(f"const unsigned int {array_name}_len = {len(contenido)};\\n")
+
+    print(f"✅ Archivo '{nombre_header}' generado con éxito.")
+
+
+# 👉 Reemplaza con el nombre de tu modelo
+convertir_tflite_a_header("modelo_conv1d.tflite", "modelo_conv1d.h")
+""", language='bash')
 
     st.subheader("Código Arduino para inferencia del modelo IMU")
     st.markdown('Debes incluir la libreria modelo_conv1d.h')
