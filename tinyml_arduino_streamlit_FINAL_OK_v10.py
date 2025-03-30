@@ -282,81 +282,274 @@ with open(FILE_UTILS, 'w') as f:
     st.subheader("Código Python para entrenamiento del modelo IMU")
 
     st.code("""
-import pandas as pd
+import os
 import numpy as np
 import tensorflow as tf
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from sklearn.model_selection import train_test_split
 
-data = pd.read_csv('datos_gestos.csv')
-X = data[['ax', 'ay', 'az', 'gx', 'gy', 'gz']].values
-y = tf.keras.utils.to_categorical(data['etiqueta'].values)
+DATASET_PATH = "./dataset"
+SEQUENCE_LENGTH = 30  # número fijo de muestras por secuencia
+NUM_FEATURES = 6       # ax, ay, az, gx, gy, gz
 
+def cargar_y_preprocesar(dataset_path=DATASET_PATH, seq_len=SEQUENCE_LENGTH):
+    X_raw, y_raw = [], []
+
+    for clase in os.listdir(dataset_path):
+        clase_path = os.path.join(dataset_path, clase)
+        if not os.path.isdir(clase_path): continue
+        for archivo in os.listdir(clase_path):
+            if archivo.endswith(".txt"):
+                with open(os.path.join(clase_path, archivo)) as f:
+                    fila = []
+                    for linea in f:
+                        if "," in linea:
+                            datos = [float(x) for x in linea.strip().split(",")]
+                            if len(datos) == NUM_FEATURES:
+                                fila.append(datos)
+                    if len(fila) == 0:
+                        continue
+                    # Padding o corte para longitud fija
+                    if len(fila) > seq_len:
+                        fila = fila[:seq_len]
+                    elif len(fila) < seq_len:
+                        pad = [[0.0] * NUM_FEATURES] * (seq_len - len(fila))
+                        fila += pad
+                    X_raw.append(fila)
+                    y_raw.append(clase)
+
+    X = np.array(X_raw)
+    y = np.array(y_raw)
+
+    # Normalización (por característica)
+    X_reshape = X.reshape(-1, NUM_FEATURES)
+    scaler = StandardScaler()
+    X_norm = scaler.fit_transform(X_reshape)
+    X_norm = X_norm.reshape(-1, seq_len, NUM_FEATURES)
+
+    # Codificar clases
+    encoder = LabelEncoder()
+    y_encoded = encoder.fit_transform(y)
+    y_cat = tf.keras.utils.to_categorical(y_encoded)
+
+    return X_norm, y_cat, encoder.classes_
+
+# PREPROCESAR
+X, y, clases = cargar_y_preprocesar()
+print("Formas:", X.shape, y.shape, "Clases:", clases)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+from tensorflow.keras.layers import SimpleRNN
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv1D, GlobalMaxPooling1D, Dense, Dropout
+
+# model = Sequential([
+#     SimpleRNN(32, input_shape=(SEQUENCE_LENGTH, NUM_FEATURES)),
+#     Dropout(0.3),
+#     Dense(32, activation='relu'),
+#     Dense(len(clases), activation='softmax')
+# ])
 model = Sequential([
-    Flatten(input_shape=(6,)),
-    Dense(64, activation='relu'),
+    Conv1D(16, kernel_size=3, activation='relu', input_shape=(SEQUENCE_LENGTH, NUM_FEATURES)),
+    Conv1D(32, kernel_size=3, activation='relu'),
+    GlobalMaxPooling1D(),
     Dense(32, activation='relu'),
-    Dense(3, activation='softmax')
+    Dropout(0.3),
+    Dense(len(clases), activation='softmax')
 ])
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-model.fit(X, y, epochs=50, batch_size=32)
+model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=30, batch_size=8)
 
+
+loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+print(f"Pérdida en el conjunto de prueba: {loss:.4f}")
+print(f"Precisión en el conjunto de prueba: {accuracy:.4f}")
+
+model.save("modelo_movimientos_lstm3.keras")
+
+# Convertir el modelo a formato TFLite
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()
-with open('gestos_modelo.tflite', 'wb') as f:
-    f.write(tflite_model)""", language='python')
+
+# Guardar el modelo convertido en un archivo
+with open("modelo_conv1d.tflite", "wb") as f:
+    f.write(tflite_model)
+
+def convertir_tflite_a_header(nombre_tflite, nombre_header):
+    with open(nombre_tflite, "rb") as f:
+        contenido = f.read()
+
+    # Abrimos el archivo header para escribir el arreglo
+    with open(nombre_header, "w") as f:
+        array_name = nombre_tflite.split('.')[0] + "_tflite"
+        f.write(f"const unsigned char {array_name}[] = {{\\n")
+
+        for i, byte in enumerate(contenido):
+            if i % 12 == 0:
+                f.write("  ")
+            f.write(f"0x{byte:02x}")
+            if i < len(contenido) - 1:
+                f.write(", ")
+            if (i + 1) % 12 == 0:
+                f.write("\n")
+
+        f.write("\n};\n")
+        f.write(f"const unsigned int {array_name}_len = {len(contenido)};\n")
+
+    print(f"✅ Archivo '{nombre_header}' generado con éxito.")
+
+
+# 👉 Reemplaza con el nombre de tu modelo
+convertir_tflite_a_header("modelo_conv1d.tflite", "modelo_conv1d.h")""", language='python')
 
     st.markdown('**🔄 Conversión del modelo TFLite a .h**')
     st.code("""xxd -i modelo_nombre.tflite > modelo_nombre.h""", language='bash')
 
     st.subheader("Código Arduino para inferencia del modelo IMU")
+    st.markdown('Debes incluir la libreria modelo_conv1d.h')
     st.code("""
-#include <Arduino_LSM9DS1.h>
-#include "gestos_modelo.h"
+#include "modelo_conv1d.h"  // Tu modelo convertido
 #include <TensorFlowLite.h>
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
+#include <Arduino_LSM9DS1.h>
 
-constexpr int kTensorArenaSize = 8 * 1024;
-uint8_t tensor_arena[kTensorArenaSize];
+#define SEQUENCE_LENGTH 50
+#define NUM_FEATURES 6
+#define TENSOR_ARENA_SIZE 10 * 1024  // Ajusta si hace falta
+
+uint8_t tensor_arena[TENSOR_ARENA_SIZE];
 
 tflite::MicroErrorReporter error_reporter;
 tflite::AllOpsResolver resolver;
-const tflite::Model* model = tflite::GetModel(gestos_modelo_tflite);
-tflite::MicroInterpreter interpreter(model, resolver, tensor_arena, kTensorArenaSize, &error_reporter);
+const tflite::Model* model = tflite::GetModel(modelo_conv1d_tflite);
+
+// ✅ Esta es la forma correcta para tu versión:
+//tflite::MicroInterpreter interpreter(model, resolver, tensor_arena, TENSOR_ARENA_SIZE, &error_reporter);
+tflite::MicroInterpreter interpreter(model, resolver, tensor_arena, TENSOR_ARENA_SIZE);
+
+
 TfLiteTensor* input;
 TfLiteTensor* output;
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial)
+    ;
+
   if (!IMU.begin()) {
-    Serial.println("Error al iniciar IMU");
-    while (1);
+    Serial.println("Error al inicializar el IMU");
+    while (1)
+      ;
   }
-  interpreter.AllocateTensors();
+
+  if (model->version() != TFLITE_SCHEMA_VERSION) {
+    Serial.println("Modelo incompatible.");
+    while (1)
+      ;
+  }
+
+  if (interpreter.AllocateTensors() != kTfLiteOk) {
+    Serial.println("Error asignando tensores");
+    while (1)
+      ;
+  }
+
   input = interpreter.input(0);
   output = interpreter.output(0);
+
+  Serial.println("Todo listo. Iniciando inferencia...");
 }
 
 void loop() {
-  float ax, ay, az, gx, gy, gz;
-  if (IMU.accelerationAvailable() && IMU.gyroscopeAvailable()) {
-    IMU.readAcceleration(ax, ay, az);
-    IMU.readGyroscope(gx, gy, gz);
-    float input_data[6] = {ax, ay, az, gx, gy, gz};
-    memcpy(input->data.f, input_data, sizeof(input_data));
-    if (interpreter.Invoke() == kTfLiteOk) {
-      float* prediction = output->data.f;
-      int gesture = std::distance(prediction, std::max_element(prediction, prediction + 3));
-      Serial.print("Gesto detectado: ");
-      Serial.println(gesture);
+  // Recolectar SEQUENCE_LENGTH muestras antes de inferencia
+  // for (int i = 0; i < SEQUENCE_LENGTH; i++) {
+  //   float ax, ay, az, gx, gy, gz;
+  //   while (!IMU.accelerationAvailable() || !IMU.gyroscopeAvailable());
+
+  //   IMU.readAcceleration(ax, ay, az);
+  //   IMU.readGyroscope(gx, gy, gz);
+
+  //   // Asignar al tensor de entrada
+  //   input->data.f[i * NUM_FEATURES + 0] = ax;
+  //   input->data.f[i * NUM_FEATURES + 1] = ay;
+  //   input->data.f[i * NUM_FEATURES + 2] = az;
+  //   input->data.f[i * NUM_FEATURES + 3] = gx;
+  //   input->data.f[i * NUM_FEATURES + 4] = gy;
+  //   input->data.f[i * NUM_FEATURES + 5] = gz;
+
+  //   delay(10);  // ~10 Hz
+  // }
+  int muestras = 0;
+
+  Serial.println("Recolectando datos del sensor...");
+  while (muestras < SEQUENCE_LENGTH) {
+    if (IMU.accelerationAvailable() && IMU.gyroscopeAvailable()) {
+      float ax, ay, az, gx, gy, gz;
+      if (IMU.readAcceleration(ax, ay, az) && IMU.readGyroscope(gx, gy, gz)) {
+        input->data.f[muestras * NUM_FEATURES + 0] = ax;
+        input->data.f[muestras * NUM_FEATURES + 1] = ay;
+        input->data.f[muestras * NUM_FEATURES + 2] = az;
+        input->data.f[muestras * NUM_FEATURES + 3] = gx;
+        input->data.f[muestras * NUM_FEATURES + 4] = gy;
+        input->data.f[muestras * NUM_FEATURES + 5] = gz;
+        muestras++;
+      } else {
+        Serial.println("Lectura fallida del IMU. Reintentando...");
+      }
+    }
+    delay(100);  // Frecuencia ~100 Hz
+  }
+
+  if (interpreter.Invoke() != kTfLiteOk) {
+    Serial.println("Error durante la inferencia");
+    return;
+  }
+
+  // float* resultados = output->data.f;
+  // int num_clases = output->dims->data[1];
+  // int max_index = 0;
+  // float max_score = resultados[0];
+
+  // for (int i = 1; i < num_clases; i++) {
+  //   if (resultados[i] > max_score) {
+  //     max_score = resultados[i];
+  //     max_index = i;
+  //   }
+  // }
+
+  // Serial.print("Predicción: Clase ");
+  // Serial.print(max_index);
+  // Serial.print(" - Confianza: ");
+  // Serial.println(max_score);
+
+  float* resultados = output->data.f;
+  int num_clases = output->dims->data[1];
+  //int num_clases = output->dims->data[1];
+  Serial.print("Número de clases detectadas por el modelo: ");
+  Serial.println(num_clases);
+
+  int pred = 0;
+  float confianza = resultados[0];
+
+  for (int i = 1; i < num_clases; i++) {
+    if (resultados[i] > confianza) {
+      confianza = resultados[i];
+      pred = i;
     }
   }
-  delay(200);
+
+  Serial.print("Movimiento detectado: Clase ");
+  Serial.print(pred);
+  Serial.print(" | Confianza: ");
+  Serial.println(confianza);
+  delay(500);
 }""", language='c')
 
 elif section == "Micrófono":
