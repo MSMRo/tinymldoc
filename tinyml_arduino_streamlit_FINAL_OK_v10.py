@@ -366,8 +366,8 @@ model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=30, batch_s
 
 
 loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
-print(f"Pérdida en el conjunto de prueba: {loss:.4f}")
-print(f"Precisión en el conjunto de prueba: {accuracy:.4f}")
+print(f"Pérdida en el conjunto de prueba: \{loss:.4f\}")
+print(f"Precisión en el conjunto de prueba: \{accuracy:.4f\}")
 
 model.save("modelo_movimientos_lstm3.keras")
 
@@ -386,7 +386,7 @@ def convertir_tflite_a_header(nombre_tflite, nombre_header):
     # Abrimos el archivo header para escribir el arreglo
     with open(nombre_header, "w") as f:
         array_name = nombre_tflite.split('.')[0] + "_tflite"
-        f.write(f"const unsigned char {array_name}[] = {{\\n")
+        f.write(f"const unsigned char \{array_name\}[] = {{\\n")
 
         for i, byte in enumerate(contenido):
             if i % 12 == 0:
