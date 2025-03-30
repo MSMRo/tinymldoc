@@ -231,41 +231,47 @@ import os
 import numpy as np
 from tqdm import tqdm
 
-PUERTO_COM = "COM4"
-BAUD_RATE = 115200
-FILE_UTILS = "utils.txt"
+# Configuración del puerto serie
+PUERTO_COM = "COM4"            # Cambiar si es necesario (por ejemplo "COM3", "COM6" o "/dev/ttyUSB0" en Linux)
+BAUD_RATE = 115200             # Debe coincidir con Serial.begin del Arduino
+FILE_UTILS = "utils.txt"       # Archivo auxiliar que guarda el nombre base y el contador
 
-with open(FILE_UTILS,'r') as f:
-    lines = eval(f.read())
-    count = lines["count"]
-    file_name = lines["file_name"]
+# Leer archivo auxiliar para obtener nombre base y contador de archivos
+with open(FILE_UTILS, 'r') as f:
+    lines = eval(f.read())          # Convierte el contenido en un diccionario
+    count = lines["count"]          # Número de archivo actual
+    file_name = lines["file_name"]  # Nombre base del archivo
 
+# Construir el nombre del archivo de salida
+FILE_NAME = file_name + "." + count + ".txt"
 
-FILE_NAME = file_name+"."+ count +".txt"
+# Parámetros de adquisición
+t = 1        # Duración total de adquisición (en segundos)
+Fs = 10      # Frecuencia de muestreo (Hz)
+T = 1 / Fs   # Periodo de muestreo
+n = int(t / T)  # Número total de muestras
 
-t = 1  # Duración de la señal
-Fs= 10  # Frecuencia de muestreo
-T = 1/Fs  # Periodo de muestreo
-n = int(t/T)  # Número de muestras
+# Abrir conexión serial con Arduino
+ser = serial.Serial(PUERTO_COM, BAUD_RATE)
 
-ser = serial.Serial(PUERTO_COM, BAUD_RATE)  # Asegúrate que sea el baud rate correcto
-
+# Captura de datos
 try:
     with open(FILE_NAME, "w") as f:
         for i in tqdm(range(n)):
-            line = ser.readline().decode('utf-8', errors='ignore')
-            #print(line.strip())
-            f.write(line.strip()+"\\n")
+            line = ser.readline().decode('utf-8', errors='ignore')  # Leer línea del puerto serial
+            f.write(line.strip() + "\n")  # Guardar en archivo sin espacios en blanco
 
-            time.sleep(T)
+            time.sleep(T)  # Esperar entre lecturas para respetar la frecuencia
+
         print("Datos guardados en", FILE_NAME)
-        ser.close()
+        ser.close()  # Cerrar puerto serial
 except:
-    ser.close()
+    ser.close()  # Cerrar puerto serial en caso de error
 
-with open(FILE_UTILS,'w') as f:
-    lines["count"] = str(int(count)+1)
-    f.write(str(lines))
+# Actualizar contador en el archivo auxiliar
+with open(FILE_UTILS, 'w') as f:
+    lines["count"] = str(int(count) + 1)  # Incrementar contador
+    f.write(str(lines))                   # Guardar nueva versión
     print("Archivo actualizado:", lines["count"])
 
 """, language='python')
