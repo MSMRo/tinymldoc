@@ -156,11 +156,63 @@ void loop() {
   }
   delay(100);
 }""", language='c')
-    st.markdown('**🔄 Adquirir datos desde la PC**')
-    st.code("""$ cat /dev/ttyACM0 > datos1.csv""", language='bash')
-    st.subheader("Código Python para entrenamiento del modelo IMU")
 
-    st.code("""
+st.markdown('**🔄 Adquirir datos desde la PC**')
+st.markdown("Se debe crear un archivo llamado utils.txt en el mismo folder del script de adquisición")
+st.code("""
+{'count': '0', 'file_name': 'ex1'}
+""", language='bash')
+
+st.code("""
+import serial
+import time
+import sys
+import os
+import numpy as np
+from tqdm import tqdm
+
+PUERTO_COM = "COM4"
+BAUD_RATE = 115200
+FILE_UTILS = "utils.txt"
+
+with open(FILE_UTILS,'r') as f:
+    lines = eval(f.read())
+    count = lines["count"]
+    file_name = lines["file_name"]
+
+
+FILE_NAME = file_name+"."+ count +".txt"
+
+t = 1  # Duración de la señal
+Fs= 10  # Frecuencia de muestreo
+T = 1/Fs  # Periodo de muestreo
+n = int(t/T)  # Número de muestras
+
+ser = serial.Serial(PUERTO_COM, BAUD_RATE)  # Asegúrate que sea el baud rate correcto
+
+try:
+    with open(FILE_NAME, "w") as f:
+        for i in tqdm(range(n)):
+            line = ser.readline().decode('utf-8', errors='ignore')
+            #print(line.strip())
+            f.write(line.strip()+"\n")
+
+            time.sleep(T)
+        print("Datos guardados en", FILE_NAME)
+        ser.close()
+except:
+    ser.close()
+
+with open(FILE_UTILS,'w') as f:
+    lines["count"] = str(int(count)+1)
+    f.write(str(lines))
+    print("Archivo actualizado:", lines["count"])
+
+""", language='python')
+
+st.subheader("Código Python para entrenamiento del modelo IMU")
+
+st.code("""
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -184,11 +236,14 @@ model.fit(X, y, epochs=50, batch_size=32)
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()
 with open('gestos_modelo.tflite', 'wb') as f:
-    f.write(tflite_model)""", language='c')
-    st.markdown('**🔄 Conversión del modelo TFLite a .h**')
-    st.code("""xxd -i modelo_nombre.tflite > modelo_nombre.h""", language='bash')
-    st.subheader("Código Arduino para inferencia del modelo IMU")
-    st.code("""#include <Arduino_LSM9DS1.h>
+    f.write(tflite_model)""", language='python')
+
+st.markdown('**🔄 Conversión del modelo TFLite a .h**')
+st.code("""xxd -i modelo_nombre.tflite > modelo_nombre.h""", language='bash')
+
+st.subheader("Código Arduino para inferencia del modelo IMU")
+st.code("""
+#include <Arduino_LSM9DS1.h>
 #include "gestos_modelo.h"
 #include <TensorFlowLite.h>
 #include "tensorflow/lite/micro/all_ops_resolver.h"
