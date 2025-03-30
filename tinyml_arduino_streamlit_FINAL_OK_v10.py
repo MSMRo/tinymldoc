@@ -131,6 +131,65 @@ elif section == "IMU":
 Este ejemplo utiliza el sensor IMU del Arduino Nano 33 BLE Sense para detectar gestos como 'arriba', 'abajo', 'izquierda' y 'derecha'.
 Consta de tres partes: adquisición de datos desde el sensor, entrenamiento del modelo en Python, y despliegue del modelo en la placa.""")
     st.subheader("Código Arduino para adquisición de datos IMU")
+    st.markdown("Pueden usar este código usando millis y controlando el tiempo de muestreo:")
+    st.code("""
+#include <Arduino_LSM9DS1.h> 
+// Incluye la librería para controlar el sensor de movimiento LSM9DS1 (acelerómetro y giroscopio)
+// Esta librería es compatible con la placa Arduino Nano 33 BLE Sense
+
+int fs = 10;       // Frecuencia de muestreo en Hz (cuántas veces por segundo se tomará una medición)
+float T = 1/fs;    // Periodo de muestreo en segundos (tiempo entre mediciones)
+
+// Variable para guardar el tiempo del último muestreo
+unsigned long lastMillis = 0;
+
+void setup() {
+  Serial.begin(115200); // Inicializa la comunicación serial a 115200 baudios
+  while (!Serial)
+    ; // Espera a que se abra el monitor serial (importante para algunas placas)
+
+  // Intenta inicializar el sensor IMU (acelerómetro + giroscopio)
+  if (!IMU.begin()) {
+    Serial.println("Error al iniciar IMU"); // Si falla, imprime error
+    while (1)
+      ; // Se detiene en un bucle infinito
+  }
+}
+
+void loop() {
+  float ax, ay, az; // Variables para la aceleración en los ejes X, Y, Z
+  float gx, gy, gz; // Variables para la velocidad angular (giroscopio) en los ejes X, Y, Z
+
+  // Verifica si ha pasado el tiempo suficiente desde la última lectura
+  if (millis() - lastMillis > T) {
+    lastMillis = millis(); // Actualiza el tiempo de la última lectura
+
+    // Verifica que haya datos disponibles de acelerómetro y giroscopio
+    if (IMU.accelerationAvailable() && IMU.gyroscopeAvailable()) {
+      // Lee los datos del acelerómetro y los guarda en ax, ay, az
+      IMU.readAcceleration(ax, ay, az);
+
+      // Lee los datos del giroscopio y los guarda en gx, gy, gz
+      IMU.readGyroscope(gx, gy, gz);
+
+      // Imprime los datos separados por comas (útil para registrar en CSV o visualizar en tiempo real)
+      Serial.print(ax);
+      Serial.print(",");
+      Serial.print(ay);
+      Serial.print(",");
+      Serial.print(az);
+      Serial.print(",");
+      Serial.print(gx);
+      Serial.print(",");
+      Serial.print(gy);
+      Serial.print(",");
+      Serial.println(gz); // Cambia de línea después de imprimir gz
+    }
+  }
+}
+
+            """, language='c')
+    st.markdown("Tambien pueden usar un código mas simple, pero deben de asegurar el tiempo de muestreo:")
     st.code("""#include <Arduino_LSM9DS1.h>
 
 void setup() {
