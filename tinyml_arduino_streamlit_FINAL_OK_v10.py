@@ -196,7 +196,7 @@ try:
         for i in tqdm(range(n)):
             line = ser.readline().decode('utf-8', errors='ignore')
             #print(line.strip())
-            f.write(line.strip()+"\n")
+            f.write(line.strip()+"\\n")
 
             time.sleep(T)
         print("Datos guardados en", FILE_NAME)
