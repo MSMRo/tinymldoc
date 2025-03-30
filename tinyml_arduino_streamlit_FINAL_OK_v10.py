@@ -217,7 +217,7 @@ void loop() {
   delay(100);
 }""", language='c')
 
-    st.markdown('**🔄 Adquirir datos desde la PC**')
+    st.subheader('🔄 Adquirir datos desde la PC')
     st.markdown("Se debe crear un archivo llamado utils.txt en el mismo folder del script de adquisición")
     st.code("""
 {'count': '0', 'file_name': 'ex1'}
@@ -259,7 +259,7 @@ try:
     with open(FILE_NAME, "w") as f:
         for i in tqdm(range(n)):
             line = ser.readline().decode('utf-8', errors='ignore')  # Leer línea del puerto serial
-            f.write(line.strip() + "\n")  # Guardar en archivo sin espacios en blanco
+            f.write(line.strip() + "\\n")  # Guardar en archivo sin espacios en blanco
 
             time.sleep(T)  # Esperar entre lecturas para respetar la frecuencia
 
