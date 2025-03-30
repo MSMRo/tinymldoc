@@ -126,6 +126,7 @@ Verifica en el IDE de Arduino en `Archivo -> Ejemplos` que aparezca `Arduino_Ten
 Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE Sense. También puede usarse en placas con procesadores Arm Cortex M como la Raspberry Pi Pico. Sin embargo, el acceso a sensores está específicamente diseñado para el Nano 33 BLE Sense.""")
 
 elif section == "IMU":
+
     st.markdown("""1. Clasificación de Gestos con IMU
 Este ejemplo utiliza el sensor IMU del Arduino Nano 33 BLE Sense para detectar gestos como 'arriba', 'abajo', 'izquierda' y 'derecha'.
 Consta de tres partes: adquisición de datos desde el sensor, entrenamiento del modelo en Python, y despliegue del modelo en la placa.""")
@@ -157,13 +158,13 @@ void loop() {
   delay(100);
 }""", language='c')
 
-st.markdown('**🔄 Adquirir datos desde la PC**')
-st.markdown("Se debe crear un archivo llamado utils.txt en el mismo folder del script de adquisición")
-st.code("""
+    st.markdown('**🔄 Adquirir datos desde la PC**')
+    st.markdown("Se debe crear un archivo llamado utils.txt en el mismo folder del script de adquisición")
+    st.code("""
 {'count': '0', 'file_name': 'ex1'}
 """, language='bash')
 
-st.code("""
+    st.code("""
 import serial
 import time
 import sys
@@ -210,9 +211,9 @@ with open(FILE_UTILS,'w') as f:
 
 """, language='python')
 
-st.subheader("Código Python para entrenamiento del modelo IMU")
+    st.subheader("Código Python para entrenamiento del modelo IMU")
 
-st.code("""
+    st.code("""
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -238,11 +239,11 @@ tflite_model = converter.convert()
 with open('gestos_modelo.tflite', 'wb') as f:
     f.write(tflite_model)""", language='python')
 
-st.markdown('**🔄 Conversión del modelo TFLite a .h**')
-st.code("""xxd -i modelo_nombre.tflite > modelo_nombre.h""", language='bash')
+    st.markdown('**🔄 Conversión del modelo TFLite a .h**')
+    st.code("""xxd -i modelo_nombre.tflite > modelo_nombre.h""", language='bash')
 
-st.subheader("Código Arduino para inferencia del modelo IMU")
-st.code("""
+    st.subheader("Código Arduino para inferencia del modelo IMU")
+    st.code("""
 #include <Arduino_LSM9DS1.h>
 #include "gestos_modelo.h"
 #include <TensorFlowLite.h>
