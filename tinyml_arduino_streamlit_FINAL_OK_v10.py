@@ -288,11 +288,14 @@ Este dataset contiene datos del sensor IMU (acelerómetro y giroscopio) recolect
 
 ## 📁 Estructura del Dataset
 El dataset debe tener una estructura, cada clase de movimiento se almacena en una carpeta separada.
-EL archivo debe llamarse por ejem: mov1.0.txt donde contentra los valores de los acelerometros y giroscopios.
+EL archivo debe llamarse por ejem: mov1.0.txt donde contendrá los valores de los acelerometros y giroscopios.
                 
 """)
     imagen = Image.open("img/dataset_folder_tinyml3.png")
     st.image(imagen, caption='Estructura del Dataset', use_container_width=False)
+
+    img2 = Image.open("img/estructura_contenido.png")
+    st.image(img2, caption='Contenido de los files: mov1.x.png', use_container_width=False)
 
 
     st.subheader("Código Python para entrenamiento del modelo IMU")
