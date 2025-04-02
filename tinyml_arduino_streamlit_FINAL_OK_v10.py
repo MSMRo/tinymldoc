@@ -291,8 +291,8 @@ El dataset debe tener una estructura, cada clase de movimiento se almacena en un
 EL archivo debe llamarse por ejem: mov1.0.txt donde contentra los valores de los acelerometros y giroscopios.
                 
 """)
-    imagen = Image.open("img/dataset_folder_tinyml2.png")
-    st.image(imagen, caption='Estructura del Dataset', use_column_width=False)
+    imagen = Image.open("img/dataset_folder_tinyml3.png")
+    st.image(imagen, caption='Estructura del Dataset', use_container_width=False)
 
 
     st.subheader("Código Python para entrenamiento del modelo IMU")
