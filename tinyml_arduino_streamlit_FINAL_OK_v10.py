@@ -1,5 +1,6 @@
 
 import streamlit as st
+from PIL import Image
 
 st.set_page_config(
     page_title="TinyML con Arduino Nano 33 BLE Sense",
@@ -286,8 +287,12 @@ with open(FILE_UTILS, 'w') as f:
 Este dataset contiene datos del sensor IMU (acelerómetro y giroscopio) recolectados desde un Arduino Nano 33 BLE Sense. Cada clase de movimiento se almacena en una carpeta separada.
 
 ## 📁 Estructura del Dataset
-  ![estructura del dataset](img/dataset_folder_tinyml2.png)               
+                
 """)
+    imagen = Image.open("img/dataset_folder_tinyml2.png")
+    st.image(imagen, caption='Estructura del Dataset', use_column_width=True)
+
+
     st.subheader("Código Python para entrenamiento del modelo IMU")
 
     st.code("""
