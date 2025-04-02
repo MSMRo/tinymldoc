@@ -280,6 +280,14 @@ with open(FILE_UTILS, 'w') as f:
 
 """, language='python')
 
+    st.markdown("""
+## Dataset de Clasificación de Movimiento
+
+Este dataset contiene datos del sensor IMU (acelerómetro y giroscopio) recolectados desde un Arduino Nano 33 BLE Sense. Cada clase de movimiento se almacena en una carpeta separada.
+
+## 📁 Estructura del Dataset
+                dataset/ ├── caminar/ │ ├── caminar_01.csv │ ├── caminar_02.csv │ └── ... ├── correr/ │ ├── correr_01.csv │ ├── correr_02.csv │ └── ... ├── quieto/ │ ├── quieto_01.csv │ ├── quieto_02.csv │ └── ... └── labels.txt
+""")
     st.subheader("Código Python para entrenamiento del modelo IMU")
 
     st.code("""
