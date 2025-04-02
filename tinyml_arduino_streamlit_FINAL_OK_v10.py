@@ -284,13 +284,15 @@ with open(FILE_UTILS, 'w') as f:
     st.markdown("""
 ## Dataset de Clasificación de Movimiento
 
-Este dataset contiene datos del sensor IMU (acelerómetro y giroscopio) recolectados desde un Arduino Nano 33 BLE Sense. Cada clase de movimiento se almacena en una carpeta separada.
+Este dataset contiene datos del sensor IMU (acelerómetro y giroscopio) recolectados desde un Arduino Nano 33 BLE Sense.
 
 ## 📁 Estructura del Dataset
+El dataset debe tener una estructura, cada clase de movimiento se almacena en una carpeta separada.
+EL archivo debe llamarse por ejem: mov1.0.txt donde contentra los valores de los acelerometros y giroscopios.
                 
 """)
     imagen = Image.open("img/dataset_folder_tinyml2.png")
-    st.image(imagen, caption='Estructura del Dataset', use_column_width=True)
+    st.image(imagen, caption='Estructura del Dataset', use_column_width=False)
 
 
     st.subheader("Código Python para entrenamiento del modelo IMU")
