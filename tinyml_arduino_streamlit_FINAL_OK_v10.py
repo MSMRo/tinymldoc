@@ -246,6 +246,12 @@ with open("model.h", "w") as f:
 
     st.markdown(f"[Haz clic aquí para descargar el modelo .h 📄]({github_file_url})", unsafe_allow_html=True)
 
+    st.markdown("## Descargar la libreria de Tensorflow Lite")
+
+    github_file_url = "https://github.com/MSMRo/tinymldoc/raw/refs/heads/main/Arduino_TensorFlowLite.zip"
+
+    st.markdown(f"[Haz clic aquí para descargar la libreria para arduino de TFLite 📄]({github_file_url})", unsafe_allow_html=True)
+
     st.markdown("## Inferencia del modelo en arduino")
 
     st.code("""
