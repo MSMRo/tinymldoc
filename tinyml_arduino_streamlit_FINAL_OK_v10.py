@@ -329,6 +329,139 @@ void loop() {
 }
 
     """, language='c')
+    st.markdown("# Explicación del código de arduino")
+
+    st.title("Descargar el modelo desde GitHub")
+
+    github_file_url = "https://raw.githubusercontent.com/USUARIO/REPO/RAMA/ruta/archivo.txt"
+
+    st.markdown(f"[Haz clic aquí para descargar el archivo 📄]({github_file_url})", unsafe_allow_html=True)
+
+    st.markdown("## Importación de las librerias de arduino")
+    st.code(""" 
+// Inclusión de la cabecera principal de TensorFlow Lite para microcontroladores
+#include <TensorFlowLite.h>
+
+// Se incluye el modelo convertido a un arreglo C (formato .h generado con xxd o script en Python)
+#include "model.h"  // Este archivo contiene: const unsigned char model_tflite[] = {...};
+
+// Incluye clases para reportar errores de TFLite
+#include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
+
+// Intérprete para modelos TFLite en dispositivos con recursos limitados
+#include "tensorflow/lite/micro/micro_interpreter.h"
+
+// Para interpretar el modelo cargado (estructura interna del archivo .tflite)
+#include "tensorflow/lite/schema/schema_generated.h"
+
+// Resolver de operaciones: incluye todas las operaciones posibles de TFLite (puede ser pesado)
+#include "tensorflow/lite/micro/all_ops_resolver.h"
+
+""", language='c')
+    st.markdown("## Configuración de memoria para tensores")
+    st.code(""" 
+// Tamaño del buffer de memoria donde se almacenarán los tensores del modelo
+constexpr int kTensorArenaSize = 21 * 1024;  // 21 KB
+uint8_t tensor_arena[kTensorArenaSize];      // Memoria estática para los tensores
+
+""", language='c')
+    
+    st.markdown("## Declaración de variables globales")
+    st.code(""" 
+tflite::MicroErrorReporter micro_error_reporter;     // Manejador de errores
+tflite::ErrorReporter* error_reporter = &micro_error_reporter;
+
+const tflite::Model* model = nullptr;                // Puntero al modelo
+tflite::MicroInterpreter* interpreter = nullptr;     // Puntero al intérprete
+TfLiteTensor* input = nullptr;                       // Puntero al tensor de entrada
+TfLiteTensor* output = nullptr;                      // Puntero al tensor de salida
+
+""", language='c')
+    
+    st.markdown("## Función setup()")
+    st.code(""" 
+void setup() {
+  Serial.begin(115200);            // Inicia la comunicación serial
+  while (!Serial) delay(100);      // Espera hasta que el puerto esté listo
+
+  // Cargar el modelo desde el array en memoria
+  model = tflite::GetModel(model_tflite);
+  if (model->version() != TFLITE_SCHEMA_VERSION) {
+    Serial.println("Modelo incompatible con TFLite Micro");
+    return;
+  }
+
+  // Resolver: se inicializa con todas las operaciones disponibles (puede ser reemplazado por MicroMutableOpResolver)
+  static tflite::AllOpsResolver resolver;
+
+  // Crear el intérprete del modelo, asignando el modelo, las operaciones, el área de memoria, y el manejador de errores
+  static tflite::MicroInterpreter static_interpreter(
+    model, resolver, tensor_arena, kTensorArenaSize);
+  interpreter = &static_interpreter;
+
+  // Asignar los tensores internos (reserva memoria en el tensor_arena)
+  TfLiteStatus allocate_status = interpreter->AllocateTensors();
+  if (allocate_status != kTfLiteOk) {
+    Serial.println("Fallo al asignar tensores");
+    return;
+  }
+
+  // Obtener punteros directos al tensor de entrada y salida
+  input = interpreter->input(0);
+  output = interpreter->output(0);
+
+  Serial.println("Modelo cargado correctamente 🎉");
+}
+
+""", language='c')
+    
+    st.markdown("## Función loop()")
+    st.code(""" 
+void loop() {
+  // Asignar valores de entrada al modelo (en este caso, 2 características de entrada)
+  input->data.f[0] = 200;   // Primer valor de entrada
+  input->data.f[1] = 305;   // Segundo valor de entrada
+
+  // Ejecutar la inferencia
+  TfLiteStatus invoke_status = interpreter->Invoke();
+  if (invoke_status != kTfLiteOk) {
+    Serial.println("Fallo al ejecutar inferencia");
+    return;
+  }
+
+  // Mostrar los resultados de salida
+  Serial.print("Resultados: ");
+  for (int i = 0; i < output->dims->data[1]; ++i) {
+    Serial.print(output->data.f[i], 5);  // Imprime cada valor con 5 decimales
+    Serial.print(" ");
+  }
+  Serial.println();
+
+  // Obtener el índice con mayor probabilidad (argmax)
+  float* resultados = output->data.f;
+  int num_clases = output->dims->data[1];
+  int pred = 0;
+  float confianza = resultados[0];
+
+  for (int i = 1; i < num_clases; i++) {
+    if (resultados[i] > confianza) {
+      confianza = resultados[i];
+      pred = i;
+    }
+  }
+
+  // Mostrar clase predicha y su nivel de confianza
+  Serial.print("Movimiento detectado: Clase ");
+  Serial.print(pred);
+  Serial.print(" | Confianza: ");
+  Serial.println(confianza);
+
+  delay(2000);  // Esperar 2 segundos antes de la siguiente inferencia
+}
+
+""", language='c')
+
+    
 elif section == "IMU":
 
     st.markdown("""1. Clasificación de Gestos con IMU
