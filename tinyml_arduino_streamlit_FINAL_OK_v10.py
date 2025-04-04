@@ -202,18 +202,30 @@ with open("model.tflite", "wb") as f:
     f.write(tflite_model)
 
 # Convertir a C array para usar en Arduino
-import binascii
+#import binascii
 
-hex_data = binascii.hexlify(tflite_model).decode('utf-8')
-c_array = ','.join(f'0x{hex_data[i:i+2]}' for i in range(0, len(hex_data), 2))
+#hex_data = binascii.hexlify(tflite_model).decode('utf-8')
+#c_array = ','.join(f'0x{hex_data[i:i+2]}' for i in range(0, len(hex_data), 2))
+
+#with open("model.h", "w") as f:
+#    f.write('#include <cstdint>\\n\\n')
+#    f.write('const unsigned char g_model[] = {\\n')
+#    f.write(c_array)
+#    f.write('\\n};\\n')
+#    f.write(f'const int g_model_len = {len(tflite_model)};\\n')
+
+# Convertir el modelo TFLite a un archivo .h
+with open("model.tflite", "rb") as f:
+    tflite_data = f.read()
 
 with open("model.h", "w") as f:
-    f.write('#include <cstdint>\\n\\n')
-    f.write('const unsigned char g_model[] = {\\n')
-    f.write(c_array)
-    f.write('\\n};\\n')
-    f.write(f'const int g_model_len = {len(tflite_model)};\\n')
-
+    f.write("#ifndef MODEL_H\\n")
+    f.write("#define MODEL_H\\n\\n")
+    f.write(f"const unsigned char model_tflite[] = {{\\n")
+    f.write(", ".join(f"0x{byte:02x}" for byte in tflite_data))
+    f.write("\\n};\\n\\n")
+    f.write(f"const unsigned int model_tflite_len = {len(tflite_data)};\\n\\n")
+    f.write("#endif // MODEL_H\\n")
 
 """, language='python')
     
