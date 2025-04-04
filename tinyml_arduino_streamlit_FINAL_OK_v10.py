@@ -126,6 +126,15 @@ Verifica en el IDE de Arduino en `Archivo -> Ejemplos` que aparezca `Arduino_Ten
 ### Compatibilidad
 Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE Sense. También puede usarse en placas con procesadores Arm Cortex M como la Raspberry Pi Pico. Sin embargo, el acceso a sensores está específicamente diseñado para el Nano 33 BLE Sense.""")
     st.markdown("# Código de ejemplo de python")
+    
+    st.markdown("## Descargar el datset desde GitHub")
+
+    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/data.csv"
+
+    st.markdown(f"[Haz clic aquí para descargar el dataset 📄]({github_file_url})", unsafe_allow_html=True)
+
+    st.markdown("## Creación del modelo")
+
     st.code("""
 #!pip install "tensorflow[and-cuda]" --upgrade --force-reinstall --no-cache-dir
 
@@ -230,6 +239,15 @@ with open("model.h", "w") as f:
 """, language='python')
     
     st.markdown("# Ejemplo de código en arduino")
+
+    st.markdown("## Descargar el modelo desde GitHub")
+
+    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
+
+    st.markdown(f"[Haz clic aquí para descargar el dataset 📄]({github_file_url})", unsafe_allow_html=True)
+
+    st.markdown("## Inferencia del modelo en arduino")
+
     st.code("""
 #include <TensorFlowLite.h>
 #include "model.h"  // tu modelo en formato .h convertido con xxd
