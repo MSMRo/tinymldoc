@@ -244,7 +244,7 @@ with open("model.h", "w") as f:
 
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
 
-    st.markdown(f"[Haz clic aquí para descargar el dataset 📄]({github_file_url})", unsafe_allow_html=True)
+    st.markdown(f"[Haz clic aquí para descargar el modelo .h 📄]({github_file_url})", unsafe_allow_html=True)
 
     st.markdown("## Inferencia del modelo en arduino")
 
