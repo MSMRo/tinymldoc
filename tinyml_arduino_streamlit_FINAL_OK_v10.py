@@ -333,7 +333,7 @@ void loop() {
 
     st.title("Descargar el modelo desde GitHub")
 
-    github_file_url = "https://raw.githubusercontent.com/USUARIO/REPO/RAMA/ruta/archivo.txt"
+    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
 
     st.markdown(f"[Haz clic aquí para descargar el archivo 📄]({github_file_url})", unsafe_allow_html=True)
 
