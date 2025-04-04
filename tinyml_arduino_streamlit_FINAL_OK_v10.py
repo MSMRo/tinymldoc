@@ -125,7 +125,198 @@ git clone https://github.com/tensorflow/tflite-micro-arduino-examples Arduino_Te
 Verifica en el IDE de Arduino en `Archivo -> Ejemplos` que aparezca `Arduino_TensorFlowLite`.
 ### Compatibilidad
 Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE Sense. También puede usarse en placas con procesadores Arm Cortex M como la Raspberry Pi Pico. Sin embargo, el acceso a sensores está específicamente diseñado para el Nano 33 BLE Sense.""")
+    st.markdown("# Código de ejemplo de python")
+    st.code("""
+#!pip install "tensorflow[and-cuda]" --upgrade --force-reinstall --no-cache-dir
 
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from sklearn.model_selection import train_test_split
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+df.head()
+
+X = df[["x1","x2"]].values
+y = df[["y"]].values
+
+X_train, X_test, y_train, y_test  = train_test_split(X, y, test_size=0.2, random_state=42)
+
+X_train.shape, X_test.shape, y_train.shape, y_test.shape
+
+model = models.Sequential([
+    layers.Input(shape=(2,)), 
+    layers.Dense(64, activation='relu'),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(4, activation='softmax'),
+])
+
+model.compile(optimizer='adam', 
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.2, validation_data=(X_test, y_test))
+
+import matplotlib.pyplot as plt
+
+plt.figure()
+plt.plot(history.history['accuracy'], label='accuracy')
+plt.plot(history.history['val_accuracy'], label='val_accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+plt.figure()
+plt.plot(history.history['loss'], label='loss')
+plt.plot(history.history['val_loss'], label='val_loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+# Evaluate the model
+loss, accuracy = model.evaluate(X_test, y_test)
+print(f"Test Loss: {loss}")
+print(f"Test Accuracy: {accuracy}")
+
+# Save the model
+model.save("model.h5")
+
+import seaborn as sb
+sb.scatterplot(x=X_test[:,0], y=X_test[:,1], hue=y_test.flatten(), palette="deep")
+
+import numpy as np
+val = np.array([[700,400]])
+print("Clase predicha es:", int(np.argmax(model.predict(val))))
+
+!pip install pydot
+tf.keras.utils.plot_model(model, show_shapes=True, show_layer_names=True, to_file='./model.png')
+
+# Exportar el modelo a formato TFLite
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+
+# Guardar el modelo TFLite en un archivo
+with open("model.tflite", "wb") as f:
+    f.write(tflite_model)
+
+# Convertir a C array para usar en Arduino
+import binascii
+
+hex_data = binascii.hexlify(tflite_model).decode('utf-8')
+c_array = ','.join(f'0x{hex_data[i:i+2]}' for i in range(0, len(hex_data), 2))
+
+with open("model.h", "w") as f:
+    f.write('#include <cstdint>\n\n')
+    f.write('const unsigned char g_model[] = {\n')
+    f.write(c_array)
+    f.write('\n};\n')
+    f.write(f'const int g_model_len = {len(tflite_model)};\n')
+
+
+""", language='python')
+    
+    st.markdown("# Ejemplo de código en arduino")
+    st.code("""
+#include <TensorFlowLite.h>
+#include "model.h"  // tu modelo en formato .h convertido con xxd
+
+#include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/lite/micro/all_ops_resolver.h"
+
+// Configuración de memoria
+constexpr int kTensorArenaSize = 21 * 1024;
+uint8_t tensor_arena[kTensorArenaSize];
+
+// Instancias globales
+tflite::MicroErrorReporter micro_error_reporter;
+tflite::ErrorReporter* error_reporter = &micro_error_reporter;
+
+const tflite::Model* model = nullptr;
+tflite::MicroInterpreter* interpreter = nullptr;
+TfLiteTensor* input = nullptr;
+TfLiteTensor* output = nullptr;
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial) delay(100);
+
+  // Cargar modelo
+  model = tflite::GetModel(model_tflite);
+  if (model->version() != TFLITE_SCHEMA_VERSION) {
+    Serial.println("Modelo incompatible con TFLite Micro");
+    return;
+  }
+
+  // Resolver de operaciones
+  static tflite::AllOpsResolver resolver;
+
+  // Crear intérprete
+  static tflite::MicroInterpreter static_interpreter(
+    model, resolver, tensor_arena, kTensorArenaSize);
+  interpreter = &static_interpreter;
+
+  // Asignar tensores
+  TfLiteStatus allocate_status = interpreter->AllocateTensors();
+  if (allocate_status != kTfLiteOk) {
+    Serial.println("Fallo al asignar tensores");
+    return;
+  }
+
+  input = interpreter->input(0);
+  output = interpreter->output(0);
+
+  Serial.println("Modelo cargado correctamente 🎉");
+}
+
+void loop() {
+  // ✅ Ejemplo: llenar input con dos valores
+  input->data.f[0] = 200;
+  input->data.f[1] = 305;
+
+  // Ejecutar inferencia
+  TfLiteStatus invoke_status = interpreter->Invoke();
+  if (invoke_status != kTfLiteOk) {
+    Serial.println("Fallo al ejecutar inferencia");
+    return;
+  }
+
+  // Mostrar salida
+  Serial.print("Resultados: ");
+  for (int i = 0; i < output->dims->data[1]; ++i) {
+    Serial.print(output->data.f[i], 5);
+    Serial.print(" ");
+  }
+  Serial.println();
+
+  float* resultados = output->data.f;
+  int num_clases = output->dims->data[1];
+  //int num_clases = output->dims->data[1];
+  //Serial.print("Número de clases detectadas por el modelo: ");
+  //Serial.println(num_clases);
+
+  int pred = 0;
+  float confianza = resultados[0];
+
+  for (int i = 1; i < num_clases; i++) {
+    if (resultados[i] > confianza) {
+      confianza = resultados[i];
+      pred = i;
+    }
+  }
+
+  Serial.print("Movimiento detectado: Clase ");
+  Serial.print(pred);
+  Serial.print(" | Confianza: ");
+  Serial.println(confianza);
+
+  delay(2000);
+}
+
+    """, language='c')
 elif section == "IMU":
 
     st.markdown("""1. Clasificación de Gestos con IMU
