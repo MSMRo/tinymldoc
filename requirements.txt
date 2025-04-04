@@ -1,5 +1,7 @@
-streamlit
-pillow
+drawdata
 numpy
-pandas
 matplotlib
+pandas
+scikit-learn
+seaborn
+#tensorflow[and-cuda]
