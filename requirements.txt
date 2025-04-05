@@ -4,4 +4,4 @@ matplotlib
 pandas
 scikit-learn
 seaborn
-#tensorflow[and-cuda]
+tensorflow
