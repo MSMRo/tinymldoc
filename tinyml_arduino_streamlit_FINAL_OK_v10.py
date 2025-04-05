@@ -119,13 +119,13 @@ Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE
     )
     
     
-    st.markdown("## Descargar el dataset tabular desde GitHub")
+    st.markdown("### Descargar el dataset tabular desde GitHub")
     st.markdown("El dataset simulará la data obtenida por sensores adquiridos por el arduino. <br>")
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/data.csv"
 
     st.markdown(f"[Haz clic aquí para descargar el dataset 📄]({github_file_url})", unsafe_allow_html=True)
 
-    st.markdown("## Creación del modelo")
+    st.markdown("## 2.1 Código en python para la creación del modelo")
 
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/crea_modelo.ipynb"
 
@@ -239,21 +239,21 @@ with open("model.h", "w") as f:
 
 """, language='python')
     
-    st.markdown("# Ejemplo de código en arduino")
+    st.markdown("## 2.2 Ejemplo de código en arduino")
 
-    st.markdown("## Descargar el modelo desde GitHub")
+    st.markdown("### Descargar el modelo desde GitHub")
 
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
 
     st.markdown(f"[Haz clic aquí para descargar el modelo .h 📄]({github_file_url})", unsafe_allow_html=True)
 
-    st.markdown("## Descargar la libreria de Tensorflow Lite")
+    st.markdown("### Descargar la libreria de Tensorflow Lite")
 
     github_file_url = "https://github.com/MSMRo/tinymldoc/raw/refs/heads/main/Arduino_TensorFlowLite.zip"
 
     st.markdown(f"[Haz clic aquí para descargar la libreria para arduino de TFLite 📄]({github_file_url})", unsafe_allow_html=True)
 
-    st.markdown("## Inferencia del modelo en arduino")
+    st.markdown("### Inferencia del modelo en arduino")
 
     st.code("""
 #include <TensorFlowLite.h>
@@ -354,15 +354,15 @@ void loop() {
 }
 
     """, language='c')
-    st.markdown("# Explicación del código de arduino")
+    st.markdown("## 2.3 Explicación del código de arduino")
 
-    st.title("Descargar el modelo desde GitHub")
+    st.title("### Descargar el modelo desde GitHub")
 
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
 
     st.markdown(f"[Haz clic aquí para descargar el archivo 📄]({github_file_url})", unsafe_allow_html=True)
 
-    st.markdown("## Importación de las librerias de arduino")
+    st.markdown("### Importación de las librerias de arduino")
     st.code(""" 
 // Inclusión de la cabecera principal de TensorFlow Lite para microcontroladores
 #include <TensorFlowLite.h>
@@ -383,7 +383,7 @@ void loop() {
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 
 """, language='c')
-    st.markdown("## Configuración de memoria para tensores")
+    st.markdown("### Configuración de memoria para tensores")
     st.code(""" 
 // Tamaño del buffer de memoria donde se almacenarán los tensores del modelo
 constexpr int kTensorArenaSize = 21 * 1024;  // 21 KB
@@ -391,7 +391,7 @@ uint8_t tensor_arena[kTensorArenaSize];      // Memoria estática para los tenso
 
 """, language='c')
     
-    st.markdown("## Declaración de variables globales")
+    st.markdown("### Declaración de variables globales")
     st.code(""" 
 tflite::MicroErrorReporter micro_error_reporter;     // Manejador de errores
 tflite::ErrorReporter* error_reporter = &micro_error_reporter;
@@ -403,7 +403,7 @@ TfLiteTensor* output = nullptr;                      // Puntero al tensor de sal
 
 """, language='c')
     
-    st.markdown("## Función setup()")
+    st.markdown("### Función setup()")
     st.code(""" 
 void setup() {
   Serial.begin(115200);            // Inicia la comunicación serial
@@ -440,7 +440,7 @@ void setup() {
 
 """, language='c')
     
-    st.markdown("## Función loop()")
+    st.markdown("### Función loop()")
     st.code(""" 
 void loop() {
   // Asignar valores de entrada al modelo (en este caso, 2 características de entrada)
