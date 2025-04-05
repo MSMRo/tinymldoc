@@ -139,7 +139,24 @@ git clone https://github.com/tensorflow/tflite-micro-arduino-examples Arduino_Te
 Verifica en el IDE de Arduino en `Archivo -> Ejemplos` que aparezca `Arduino_TensorFlowLite`.
 ### Compatibilidad
 Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE Sense. También puede usarse en placas con procesadores Arm Cortex M como la Raspberry Pi Pico. Sin embargo, el acceso a sensores está específicamente diseñado para el Nano 33 BLE Sense.""")
-    st.markdown("# Código de ejemplo de python")
+    st.markdown("# ¡Vamos a la acción! Vamos a inferir un modelo de deep learning en arduino")
+    st.markdown("""
+    Vamos a realizar el paso a paso para inferir un modelo en arduino, para ello partiremos con la creación del modelo en tensorflow y luego pasaremos a exportar el modelo .tflite a .h que servirá para arduino pueda reconocerlo como 
+    libreria y poder inferir el modelo usando la libreria de LiteRt micro (este es otro nombre a TFLite micro). En este tutorial podrán descargar tanto el dataset usado como el modelo y los códigos usado.
+    Crearemos un clasificador para predecir las clases que se muestran en la imagen siguiente:
+    """)
+
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/plot_graph_tinyml1.png" width="550">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+    
     
     st.markdown("## Descargar el datset desde GitHub")
 
