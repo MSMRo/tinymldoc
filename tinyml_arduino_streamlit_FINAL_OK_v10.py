@@ -3,8 +3,9 @@ import streamlit as st
 from PIL import Image
 
 st.set_page_config(
-    page_title="TinyML con Arduino Nano 33 BLE Sense",
-    layout="wide"
+    page_title="TinyML DOCs",
+    layout="wide",
+    page_icon="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/comunidad_tinyml_per_logo.jpeg",
 )
 
 st.markdown("""
