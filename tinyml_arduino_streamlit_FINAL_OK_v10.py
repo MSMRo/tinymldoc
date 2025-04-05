@@ -169,9 +169,14 @@ Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/crea_modelo.ipynb"
 
     st.markdown(f"[Tambien puedes descargar el notebook de la creación del modelo dando click aquí 📄]({github_file_url})", unsafe_allow_html=True)
+
+    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/requirements.txt"
+
+    st.markdown(f"[Descarga las librerias de python usando requirements.txt dando click aquí 📄]({github_file_url})", unsafe_allow_html=True)
+    
     
     st.code("""
-#!pip install "tensorflow[and-cuda]" --upgrade --force-reinstall --no-cache-dir
+#!pip install -r requirements.txt #descomentar para instalar las librerias
 
 import tensorflow as tf
 from tensorflow.keras import layers, models
