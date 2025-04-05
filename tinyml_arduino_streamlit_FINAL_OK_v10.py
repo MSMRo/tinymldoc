@@ -166,7 +166,7 @@ Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE
 
     st.markdown("## Creación del modelo")
 
-    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/gen_data_toy1.ipynb"
+    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/crea_modelo.ipynb"
 
     st.markdown(f"[Tambien puedes descargar el notebook de la creación del modelo dando click aquí 📄]({github_file_url})", unsafe_allow_html=True)
     
