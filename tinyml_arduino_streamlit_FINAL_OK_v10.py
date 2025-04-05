@@ -365,8 +365,8 @@ void loop() {
     st.markdown("""
 La documentación oficial de la libreria para arduino se encuentra en los siguientes links:
                 
-                - https://ai.google.dev/edge/litert/microcontrollers/overview?hl=es-419
-                - https://www.tensorflow.org/lite/microcontrollers?hl=es-419
+                - [link google edge](https://ai.google.dev/edge/litert/microcontrollers/overview?hl=es-419)
+                - [link tensorflow](https://www.tensorflow.org/lite/microcontrollers?hl=es-419)
 """)
 
     st.markdown("### Importación de las librerias de arduino")
