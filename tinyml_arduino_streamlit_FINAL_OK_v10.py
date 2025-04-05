@@ -356,11 +356,17 @@ void loop() {
     """, language='c')
     st.markdown("## 2.3 Explicación del código de arduino")
 
-    st.title("### Descargar el modelo desde GitHub")
+    st.markdown("### Descargar el modelo desde GitHub")
 
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
 
     st.markdown(f"[Haz clic aquí para descargar el archivo 📄]({github_file_url})", unsafe_allow_html=True)
+
+    st.markdown("""
+La documentación oficial de la libreria para arduino se encuentra en los siguientes links:
+                - https://ai.google.dev/edge/litert/microcontrollers/overview?hl=es-419
+                - https://www.tensorflow.org/lite/microcontrollers?hl=es-419
+""")
 
     st.markdown("### Importación de las librerias de arduino")
     st.code(""" 
