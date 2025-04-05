@@ -53,7 +53,7 @@ if section == "Introducción":
     unsafe_allow_html=True
     )
 
-    st.markdown("""## Documentación de la libreria de TensorFlow Lite Micro para Arduino nano 33 ble sense""")
+    st.markdown("""## 1. Documentación de la libreria de TensorFlow Lite Micro para Arduino nano 33 ble sense""")
     st.markdown("""
     La biblioteca TensorFlow Lite Micro Library for Arduino permite ejecutar modelos de aprendizaje automático en microcontroladores compatibles con Arduino. Proporciona ejemplos y código necesario para integrar modelos de TensorFlow Lite en proyectos de Arduino.
 
@@ -100,7 +100,7 @@ Verifica en el IDE de Arduino en `Archivo -> Ejemplos` que aparezca `Arduino_Ten
 ### Compatibilidad
 Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE Sense. También puede usarse en placas con procesadores Arm Cortex M como la Raspberry Pi Pico. Sin embargo, el acceso a sensores está específicamente diseñado para el Nano 33 BLE Sense.""")
     
-    st.markdown("# ¡Vamos a la acción! Vamos a inferir un modelo de deep learning en arduino a partir de un dataset tabular")
+    st.markdown("# 2. ¡Vamos a la acción! Vamos a inferir un modelo de deep learning en arduino a partir de un dataset tabular")
     st.markdown("""
     Vamos a realizar el paso a paso para inferir un modelo en arduino, para ello partiremos con la creación del modelo en tensorflow y luego pasaremos a exportar el modelo .tflite a .h que servirá para arduino pueda reconocerlo como 
     libreria y poder inferir el modelo usando la libreria de LiteRt micro (este es otro nombre a TFLite micro). En este tutorial podrán descargar tanto el dataset usado como el modelo y los códigos usado.
