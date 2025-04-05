@@ -3,7 +3,7 @@ import streamlit as st
 from PIL import Image
 
 st.set_page_config(
-    page_title="TinyML DOCs",
+    page_title="TinyML DOCs con el arduino nano 33 ble sense",
     layout="wide",
     page_icon="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/comunidad_tinyml_per_logo.jpeg",
 )
