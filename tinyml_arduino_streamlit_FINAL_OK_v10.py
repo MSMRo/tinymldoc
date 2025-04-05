@@ -39,9 +39,23 @@ section = st.sidebar.radio("📂 Navegación", [
 
 st.header(section)
 
-if section == "Introducción":
-    st.markdown("""TensorFlow Lite Micro para Arduino""")
-    st.markdown("""La biblioteca TensorFlow Lite Micro Library for Arduino permite ejecutar modelos de aprendizaje automático en microcontroladores compatibles con Arduino. Proporciona ejemplos y código necesario para integrar modelos de TensorFlow Lite en proyectos de Arduino.
+if section == "Introducción":    
+    
+
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/tinyml_kit_ghibli.png" width="450">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+
+    st.markdown("""## TensorFlow Lite Micro para Arduino usando el TINYNL KIT""")
+    st.markdown("""
+    La biblioteca TensorFlow Lite Micro Library for Arduino permite ejecutar modelos de aprendizaje automático en microcontroladores compatibles con Arduino. Proporciona ejemplos y código necesario para integrar modelos de TensorFlow Lite en proyectos de Arduino.
 
 Las Librerias de los sensores se encuentra en: [https://docs.arduino.cc/hardware/nano-33-ble-sense/#suggested-libraries](https://docs.arduino.cc/hardware/nano-33-ble-sense/#suggested-libraries)
 
@@ -126,18 +140,44 @@ git clone https://github.com/tensorflow/tflite-micro-arduino-examples Arduino_Te
 Verifica en el IDE de Arduino en `Archivo -> Ejemplos` que aparezca `Arduino_TensorFlowLite`.
 ### Compatibilidad
 Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE Sense. También puede usarse en placas con procesadores Arm Cortex M como la Raspberry Pi Pico. Sin embargo, el acceso a sensores está específicamente diseñado para el Nano 33 BLE Sense.""")
-    st.markdown("# Código de ejemplo de python")
-    
-    st.markdown("## Descargar el datset desde GitHub")
+    st.markdown("# ¡Vamos a la acción! Vamos a inferir un modelo de deep learning en arduino a partir de un dataset tabular")
+    st.markdown("""
+    Vamos a realizar el paso a paso para inferir un modelo en arduino, para ello partiremos con la creación del modelo en tensorflow y luego pasaremos a exportar el modelo .tflite a .h que servirá para arduino pueda reconocerlo como 
+    libreria y poder inferir el modelo usando la libreria de LiteRt micro (este es otro nombre a TFLite micro). En este tutorial podrán descargar tanto el dataset usado como el modelo y los códigos usado.
+    Crearemos un clasificador para predecir las clases que se muestran en la imagen siguiente:
+    """)
 
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/plot_graph_tinyml1.png" width="550">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+    
+    
+    st.markdown("## Descargar el dataset tabular desde GitHub")
+    st.markdown("El dataset simulará la data obtenida por sensores adquiridos por el arduino. <br>")
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/data.csv"
 
     st.markdown(f"[Haz clic aquí para descargar el dataset 📄]({github_file_url})", unsafe_allow_html=True)
 
     st.markdown("## Creación del modelo")
 
+    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/crea_modelo.ipynb"
+
+    st.markdown(f"[Tambien puedes descargar el notebook de la creación del modelo dando click aquí 📄]({github_file_url})", unsafe_allow_html=True)
+
+    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/requirements.txt"
+
+    st.markdown(f"[Descarga las librerias de python usando requirements.txt dando click aquí 📄]({github_file_url})", unsafe_allow_html=True)
+    
+    
     st.code("""
-#!pip install "tensorflow[and-cuda]" --upgrade --force-reinstall --no-cache-dir
+#!pip install -r requirements.txt #descomentar para instalar las librerias
 
 import tensorflow as tf
 from tensorflow.keras import layers, models
@@ -246,6 +286,12 @@ with open("model.h", "w") as f:
     github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
 
     st.markdown(f"[Haz clic aquí para descargar el modelo .h 📄]({github_file_url})", unsafe_allow_html=True)
+
+    st.markdown("## Descargar la libreria de Tensorflow Lite")
+
+    github_file_url = "https://github.com/MSMRo/tinymldoc/raw/refs/heads/main/Arduino_TensorFlowLite.zip"
+
+    st.markdown(f"[Haz clic aquí para descargar la libreria para arduino de TFLite 📄]({github_file_url})", unsafe_allow_html=True)
 
     st.markdown("## Inferencia del modelo en arduino")
 
