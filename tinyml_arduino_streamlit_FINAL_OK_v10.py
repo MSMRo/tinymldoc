@@ -53,12 +53,12 @@ if section == "Introducción":
     unsafe_allow_html=True
     )
 
-    st.markdown("""## TensorFlow Lite Micro para Arduino usando el TINYNL KIT""")
+    st.markdown("""## Documentación de la libreria de TensorFlow Lite Micro para Arduino nano 33 ble sense""")
     st.markdown("""
     La biblioteca TensorFlow Lite Micro Library for Arduino permite ejecutar modelos de aprendizaje automático en microcontroladores compatibles con Arduino. Proporciona ejemplos y código necesario para integrar modelos de TensorFlow Lite en proyectos de Arduino.
 
 Las Librerias de los sensores se encuentra en: [https://docs.arduino.cc/hardware/nano-33-ble-sense/#suggested-libraries](https://docs.arduino.cc/hardware/nano-33-ble-sense/#suggested-libraries)
-
+Para nuestros propositos usaremos un arduino nano 33 ble sense o el kit TinyMl que tambien cuenta con el nano33ble sense.
 
 ### Tabla de Contenidos
 - Estructura de la Biblioteca
@@ -99,47 +99,7 @@ git clone https://github.com/tensorflow/tflite-micro-arduino-examples Arduino_Te
 Verifica en el IDE de Arduino en `Archivo -> Ejemplos` que aparezca `Arduino_TensorFlowLite`.
 ### Compatibilidad
 Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE Sense. También puede usarse en placas con procesadores Arm Cortex M como la Raspberry Pi Pico. Sin embargo, el acceso a sensores está específicamente diseñado para el Nano 33 BLE Sense.""")
-    st.markdown("""TensorFlow Lite Micro para Arduino""")
-    st.markdown("""La biblioteca TensorFlow Lite Micro Library for Arduino permite ejecutar modelos de aprendizaje automático en microcontroladores compatibles con Arduino. Proporciona ejemplos y código necesario para integrar modelos de TensorFlow Lite en proyectos de Arduino.
-### Tabla de Contenidos
-- Estructura de la Biblioteca
-- Clases y Métodos Principales
-- Ejemplos Incluidos
-- Instalación y Configuración
-- Compatibilidad
-- Licencia
-- Contribuciones
-### Estructura de la Biblioteca
-- `examples/`: Contiene proyectos de ejemplo que demuestran el uso de TensorFlow Lite en Arduino.
-- `src/`: Incluye el código fuente principal de la biblioteca.
-- `docs/`: Documentación adicional sobre la biblioteca y su uso.
-- `scripts/`: Scripts útiles para tareas como sincronización y configuración.
-- `library.properties`: Archivo que define las propiedades de la biblioteca para el Arduino IDE.
-- `README.md`: Archivo principal de documentación con información general y guías de uso.
-### Clases y Métodos Principales
-**`tflite::MicroInterpreter`**: Esta clase es fundamental para la ejecución de modelos en dispositivos con recursos limitados.
-- `Invoke()`: Ejecuta el modelo con los datos de entrada proporcionados.
-- `input(index)`: Accede al tensor de entrada en la posición especificada.
-- `output(index)`: Accede al tensor de salida en la posición especificada.
-
-**`tflite::MicroMutableOpResolver`**: Gestiona y registra las operaciones (kernels) que el intérprete puede utilizar durante la inferencia.
-- `AddBuiltin(builtin_op, registration)`: Registra una operación incorporada.
-
-**`tflite::ErrorReporter`**: Maneja la salida de errores y mensajes de depuración.
-- `Report(format, ...)`: Informa de un error o mensaje según el formato especificado.
-### Ejemplos Incluidos
-- `Hello World`: Conceptos básicos de TensorFlow Lite para microcontroladores.
-- `Micro Speech`: Captura audio para detectar las palabras 'sí' y 'no'.
-- `Magic Wand`: Clasifica gestos físicos con datos de acelerómetro.
-Todos están en el directorio `examples/` con su respectivo `README.md`.
-### Instalación y Configuración
-Para instalar la versión en desarrollo desde GitHub:
-```bash
-git clone https://github.com/tensorflow/tflite-micro-arduino-examples Arduino_TensorFlowLite
-```
-Verifica en el IDE de Arduino en `Archivo -> Ejemplos` que aparezca `Arduino_TensorFlowLite`.
-### Compatibilidad
-Esta biblioteca está diseñada principalmente para la placa Arduino Nano 33 BLE Sense. También puede usarse en placas con procesadores Arm Cortex M como la Raspberry Pi Pico. Sin embargo, el acceso a sensores está específicamente diseñado para el Nano 33 BLE Sense.""")
+    
     st.markdown("# ¡Vamos a la acción! Vamos a inferir un modelo de deep learning en arduino a partir de un dataset tabular")
     st.markdown("""
     Vamos a realizar el paso a paso para inferir un modelo en arduino, para ello partiremos con la creación del modelo en tensorflow y luego pasaremos a exportar el modelo .tflite a .h que servirá para arduino pueda reconocerlo como 
