@@ -38,8 +38,18 @@ section = st.sidebar.radio("📂 Navegación", [
 
 st.header(section)
 
-if section == "Introducción":
-    st.markdown("""TensorFlow Lite Micro para Arduino""")
+if section == "Introducción":    
+    st.markdown("""TensorFlow Lite Micro para Arduino usando el TINYNL KIT""")
+
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://github.com/MSMRo/tinymldoc/blob/main/img/tinyml_kit_ghibli.png" width="450">
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
+    
     st.markdown("""La biblioteca TensorFlow Lite Micro Library for Arduino permite ejecutar modelos de aprendizaje automático en microcontroladores compatibles con Arduino. Proporciona ejemplos y código necesario para integrar modelos de TensorFlow Lite en proyectos de Arduino.
 
 Las Librerias de los sensores se encuentra en: [https://docs.arduino.cc/hardware/nano-33-ble-sense/#suggested-libraries](https://docs.arduino.cc/hardware/nano-33-ble-sense/#suggested-libraries)
