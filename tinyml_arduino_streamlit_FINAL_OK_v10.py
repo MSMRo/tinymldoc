@@ -44,7 +44,7 @@ if section == "Introducción":
     st.markdown(
     """
     <div style="text-align: center;">
-        <img src="https://github.com/MSMRo/tinymldoc/blob/main/img/tinyml_kit_ghibli.png" width="450">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/tinyml_kit_ghibli.png" width="450">
     </div>
     """,
     unsafe_allow_html=True
