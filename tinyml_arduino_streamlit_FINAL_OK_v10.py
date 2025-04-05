@@ -39,7 +39,7 @@ section = st.sidebar.radio("📂 Navegación", [
 st.header(section)
 
 if section == "Introducción":    
-    st.markdown("""TensorFlow Lite Micro para Arduino usando el TINYNL KIT""")
+    
 
     st.markdown(
     """
@@ -52,7 +52,7 @@ if section == "Introducción":
     unsafe_allow_html=True
     )
 
-    
+    st.markdown("""## TensorFlow Lite Micro para Arduino usando el TINYNL KIT""")
     st.markdown("""
     La biblioteca TensorFlow Lite Micro Library for Arduino permite ejecutar modelos de aprendizaje automático en microcontroladores compatibles con Arduino. Proporciona ejemplos y código necesario para integrar modelos de TensorFlow Lite en proyectos de Arduino.
 
