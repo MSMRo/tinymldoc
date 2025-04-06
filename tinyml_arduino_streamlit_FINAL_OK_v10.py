@@ -384,6 +384,18 @@ Para una mayor comprensión, la documentación oficial de la libreria para ardui
 """)
 
     st.markdown("### 2.3.1 Headers+namespace")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/hn.png" width="450">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+
+
     st.markdown("""
 Se incluyen las cabeceras necesarias para usar TensorFlow Lite Micro (TensorFlowLite.h, micro_interpreter.h, etc.).
 
