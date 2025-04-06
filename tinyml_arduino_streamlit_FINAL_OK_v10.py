@@ -486,12 +486,8 @@ Aquí se llama a **tflite::GetModel** para interpretar el arreglo binario (almac
 
 
     st.markdown("""
-"tflite::AllOpsResolver resolver;
-
 AllOpsResolver es un objeto que registra (o "resuelve") todas las operaciones disponibles en TensorFlow Lite Micro.
-
 Al usar AllOpsResolver, se incluyen prácticamente todos los kernels que TFLite Micro soporta, por lo que no tendrás que agregar manualmente las operaciones que requiera tu modelo.
-
 Sin embargo, si necesitas reducir el tamaño de tu binario (firmware) o no quieres incluir kernels que no se usan, podrías optar por MicroMutableOpResolver y añadir solo las operaciones necesarias.
 
 ¿Qué operaciones están disponibles?
@@ -548,51 +544,37 @@ En la práctica, si necesitas algo más ligero que el resolver de todas las oper
 """)
     
     
-    st.markdown("### Función loop()")
-    st.code(""" 
-void loop() {
-  // Asignar valores de entrada al modelo (en este caso, 2 características de entrada)
-  input->data.f[0] = 200;   // Primer valor de entrada
-  input->data.f[1] = 305;   // Segundo valor de entrada
+    st.markdown("### 2.3.4 Crear el interpreter")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_059.png" width="400">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+    st.markdown("""
+Aquí se llama a **tflite::GetModel** para interpretar el arreglo binario (almacenado en model_tflite) como un objeto de modelo de TensorFlow Lite.
+**model_tflite** es una variable que proviene de tu archivo model.h, donde se encuentra tu modelo TFLite incrustado como un arreglo de bytes.
+                
+ * Se verifica que la versión del modelo (model->version()) coincida con la versión del esquema TFLite (TFLITE_SCHEMA_VERSION).
+ * Si no coinciden, significa que el modelo se generó con una versión de TensorFlow Lite distinta a la que soporta la librería actual. Por eso se imprime un mensaje de error y se termina la ejecución de la función (con return), ya que no se podría ejecutar el modelo correctamente.
+""")
 
-  // Ejecutar la inferencia
-  TfLiteStatus invoke_status = interpreter->Invoke();
-  if (invoke_status != kTfLiteOk) {
-    Serial.println("Fallo al ejecutar inferencia");
+
+
+    st.code(""" 
+// Cargar modelo
+  model = tflite::GetModel(model_tflite);
+  if (model->version() != TFLITE_SCHEMA_VERSION) {
+    Serial.println("Modelo incompatible con TFLite Micro");
     return;
   }
 
-  // Mostrar los resultados de salida
-  Serial.print("Resultados: ");
-  for (int i = 0; i < output->dims->data[1]; ++i) {
-    Serial.print(output->data.f[i], 5);  // Imprime cada valor con 5 decimales
-    Serial.print(" ");
-  }
-  Serial.println();
-
-  // Obtener el índice con mayor probabilidad (argmax)
-  float* resultados = output->data.f;
-  int num_clases = output->dims->data[1];
-  int pred = 0;
-  float confianza = resultados[0];
-
-  for (int i = 1; i < num_clases; i++) {
-    if (resultados[i] > confianza) {
-      confianza = resultados[i];
-      pred = i;
-    }
-  }
-
-  // Mostrar clase predicha y su nivel de confianza
-  Serial.print("Movimiento detectado: Clase ");
-  Serial.print(pred);
-  Serial.print(" | Confianza: ");
-  Serial.println(confianza);
-
-  delay(2000);  // Esperar 2 segundos antes de la siguiente inferencia
-}
-
 """, language='c')
+    
 
     
 elif section == "IMU":
