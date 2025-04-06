@@ -390,8 +390,8 @@ Se incluyen las cabeceras necesarias para usar TensorFlow Lite Micro (TensorFlow
 La cabecera model.h es el modelo convertido a binario (usualmente con xxd) y luego incluido como arreglo de bytes para poderlo compilar directamente en el microcontrolador.
 
 - Se define un namespace anónimo para que las variables no colisionen con otros módulos. Esto hace que las variables sean visibles únicamente dentro de este archivo.
-- --const tflite::Model*-- model apunta al modelo TFLite que se carga desde model.h.
-- --tflite::MicroInterpreter*-- interpreter es el intérprete que ejecutará el modelo.
+- **const tflite::Model** model apunta al modelo TFLite que se carga desde model.h.
+- **tflite::MicroInterpreter** interpreter es el intérprete que ejecutará el modelo.
 - **TfLiteTensor* input** y **TfLiteTensor* output** apuntan a los tensores de entrada y salida del modelo.
 - **int inference_count** es un contador para llevar seguimiento del número de inferencias realizadas.
 - **constexpr int kTensorArenaSize = 2000;** define el tamaño de la arena de memoria (en bytes) donde se alojan los tensores durante la ejecución. Este tamaño puede ajustarse en función de la memoria disponible en el microcontrolador y de las necesidades del modelo.
