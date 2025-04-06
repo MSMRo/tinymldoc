@@ -392,7 +392,7 @@ La cabecera model.h es el modelo convertido a binario (usualmente con xxd) y lue
 - Se define un namespace anónimo para que las variables no colisionen con otros módulos. Esto hace que las variables sean visibles únicamente dentro de este archivo.
 - **const tflite::Model** model apunta al modelo TFLite que se carga desde model.h.
 - **tflite::MicroInterpreter** interpreter es el intérprete que ejecutará el modelo.
-- **TfLiteTensor* input** y **TfLiteTensor* output** apuntan a los tensores de entrada y salida del modelo.
+- **TfLiteTensor input** y **TfLiteTensor output** apuntan a los tensores de entrada y salida del modelo.
 - **int inference_count** es un contador para llevar seguimiento del número de inferencias realizadas.
 - **constexpr int kTensorArenaSize = 2000;** define el tamaño de la arena de memoria (en bytes) donde se alojan los tensores durante la ejecución. Este tamaño puede ajustarse en función de la memoria disponible en el microcontrolador y de las necesidades del modelo.
 - **alignas(16) uint8_t tensor_arena[kTensorArenaSize];** es el bloque de memoria alineado a 16 bytes, lo cual puede ser necesario para ciertos procesadores (por ejemplo, si se usa CMSIS o se requiere alineación específica para instrucciones SIMD).
