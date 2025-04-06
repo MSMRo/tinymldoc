@@ -357,15 +357,27 @@ void loop() {
 
     """, language='c')
     st.markdown("## 2.3 Explicación del código de arduino")
+    
+    st.markdown("Seguiremos el workflow que se muestra en la imagen para comprender la secuencia de los códigos")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/workflow_tinyml2.png" width="950">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
 
-    st.markdown("### Descargar el modelo desde GitHub")
+    #st.markdown("### Descargar el modelo desde GitHub")
 
-    github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
+    #github_file_url = "https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/model.h"
 
-    st.markdown(f"[Haz clic aquí para descargar el archivo 📄]({github_file_url})", unsafe_allow_html=True)
+    #st.markdown(f"[Haz clic aquí para descargar el archivo 📄]({github_file_url})", unsafe_allow_html=True)
 
     st.markdown("""
-La documentación oficial de la libreria para arduino se encuentra en los siguientes links:
+Para una mayor comprensión, la documentación oficial de la libreria para arduino se encuentra en los siguientes links:
                 
   - [link google edge](https://ai.google.dev/edge/litert/microcontrollers/overview?hl=es-419)
   - [link tensorflow](https://www.tensorflow.org/lite/microcontrollers?hl=es-419)
