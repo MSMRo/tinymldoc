@@ -548,7 +548,7 @@ En la práctica, si necesitas algo más ligero que el resolver de todas las oper
     st.markdown(
     """
     <div style="text-align: center;">
-        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_059.png" width="400">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_061.png" width="400">
     </div>
     <br>
     <br>
@@ -556,22 +556,34 @@ En la práctica, si necesitas algo más ligero que el resolver de todas las oper
     unsafe_allow_html=True
     )
     st.markdown("""
-Aquí se llama a **tflite::GetModel** para interpretar el arreglo binario (almacenado en model_tflite) como un objeto de modelo de TensorFlow Lite.
-**model_tflite** es una variable que proviene de tu archivo model.h, donde se encuentra tu modelo TFLite incrustado como un arreglo de bytes.
-                
- * Se verifica que la versión del modelo (model->version()) coincida con la versión del esquema TFLite (TFLITE_SCHEMA_VERSION).
- * Si no coinciden, significa que el modelo se generó con una versión de TensorFlow Lite distinta a la que soporta la librería actual. Por eso se imprime un mensaje de error y se termina la ejecución de la función (con return), ya que no se podría ejecutar el modelo correctamente.
+# Interpretación del código para crear e inicializar el intérprete en TensorFlow Lite Micro
+
+1. **Creación del intérprete**  
+   Se instancia un objeto `MicroInterpreter` a partir del modelo (`model`), el *resolver* de operaciones (`resolver`), el bloque de memoria (`tensor_arena`) y su tamaño (`kTensorArenaSize`). Luego, este intérprete se asocia a la variable global `interpreter` para poder invocar sus métodos más adelante.
+
+2. **Asignación de tensores**  
+   Al llamar a `AllocateTensors()`, el intérprete prepara y asigna la memoria para todos los tensores necesarios (entradas, salidas y cualquier tensor intermedio). Si esta asignación falla (el estado devuelto no es `kTfLiteOk`), se imprime un mensaje de error y se detiene el proceso.
+
+3. **Obtención de tensores de entrada y salida**  
+   Tras la asignación, se obtienen los punteros a los tensores de entrada y de salida con `interpreter->input(0)` y `interpreter->output(0)`, respectivamente. Estos punteros permiten interactuar directamente con los datos que el modelo consumirá y producirá al realizar inferencias.
+
 """)
 
-
-
     st.code(""" 
-// Cargar modelo
-  model = tflite::GetModel(model_tflite);
-  if (model->version() != TFLITE_SCHEMA_VERSION) {
-    Serial.println("Modelo incompatible con TFLite Micro");
+// Crear intérprete
+  static tflite::MicroInterpreter static_interpreter(
+    model, resolver, tensor_arena, kTensorArenaSize);
+  interpreter = &static_interpreter;
+
+  // Asignar tensores
+  TfLiteStatus allocate_status = interpreter->AllocateTensors();
+  if (allocate_status != kTfLiteOk) {
+    Serial.println("Fallo al asignar tensores");
     return;
   }
+
+  input = interpreter->input(0);
+  output = interpreter->output(0);
 
 """, language='c')
     
