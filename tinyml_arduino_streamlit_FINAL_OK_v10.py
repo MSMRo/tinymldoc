@@ -587,6 +587,99 @@ En la práctica, si necesitas algo más ligero que el resolver de todas las oper
 
 """, language='c')
     
+    st.markdown("### 2.3.5 Crear datos de entrada para el modelo")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_062.png" width="400">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+    st.code(""" 
+// ✅ Ejemplo: llenar input con dos valores
+  input->data.f[0] = 200;
+  input->data.f[1] = 305;
+""", language='c')
+    
+    st.markdown("### 2.3.6 Ahora toca al modelo inferenciar ")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_063.png" width="400">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+    st.code(""" 
+// Ejecutar inferencia
+  TfLiteStatus invoke_status = interpreter->Invoke();
+  if (invoke_status != kTfLiteOk) {
+    Serial.println("Fallo al ejecutar inferencia");
+    return;
+  }
+""", language='c')
+    
+    st.markdown("### 2.3.7 Variable predicha ")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_064.png" width="400">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+    st.code(""" 
+// Mostrar salida
+  Serial.print("Resultados: ");
+  for (int i = 0; i < output->dims->data[1]; ++i) {
+    Serial.print(output->data.f[i], 5);
+    Serial.print(" ");
+  }
+  Serial.println();
+""", language='c')
+    
+    st.markdown("### 2.3.8 Ejecutar acción en base a la respuesta del modelo ")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_065.png" width="400">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+    st.code(""" 
+float* resultados = output->data.f;
+  int num_clases = output->dims->data[1];
+  //int num_clases = output->dims->data[1];
+  //Serial.print("Número de clases detectadas por el modelo: ");
+  //Serial.println(num_clases);
+
+  int pred = 0;
+  float confianza = resultados[0];
+
+  for (int i = 1; i < num_clases; i++) {
+    if (resultados[i] > confianza) {
+      confianza = resultados[i];
+      pred = i;
+    }
+  }
+
+  Serial.print("Movimiento detectado: Clase ");
+  Serial.print(pred);
+  Serial.print(" | Confianza: ");
+  Serial.println(confianza);
+
+""", language='c')
+    
 
     
 elif section == "IMU":
