@@ -362,7 +362,7 @@ void loop() {
     st.markdown(
     """
     <div style="text-align: center;">
-        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/workflow_tinyml2.png" width="950">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/workflow_tinyml2.png" width="1050">
     </div>
     <br>
     <br>
