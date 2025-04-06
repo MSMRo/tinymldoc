@@ -467,53 +467,86 @@ Aquí se llama a **tflite::GetModel** para interpretar el arreglo binario (almac
 """, language='c')
     
     st.markdown("### 2.3.3 Seleccionar las operaciones de tensorflow en arduino")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_060.png" width="400">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+
     st.code(""" 
-tflite::MicroErrorReporter micro_error_reporter;     // Manejador de errores
-tflite::ErrorReporter* error_reporter = &micro_error_reporter;
-
-const tflite::Model* model = nullptr;                // Puntero al modelo
-tflite::MicroInterpreter* interpreter = nullptr;     // Puntero al intérprete
-TfLiteTensor* input = nullptr;                       // Puntero al tensor de entrada
-TfLiteTensor* output = nullptr;                      // Puntero al tensor de salida
-
+  // Resolver de operaciones
+  static tflite::AllOpsResolver resolver;
 """, language='c')
     
-    st.markdown("### Función setup()")
-    st.code(""" 
-void setup() {
-  Serial.begin(115200);            // Inicia la comunicación serial
-  while (!Serial) delay(100);      // Espera hasta que el puerto esté listo
 
-  // Cargar el modelo desde el array en memoria
-  model = tflite::GetModel(model_tflite);
-  if (model->version() != TFLITE_SCHEMA_VERSION) {
-    Serial.println("Modelo incompatible con TFLite Micro");
-    return;
-  }
 
-  // Resolver: se inicializa con todas las operaciones disponibles (puede ser reemplazado por MicroMutableOpResolver)
-  static tflite::AllOpsResolver resolver;
+    st.markdown("""
+"tflite::AllOpsResolver resolver;
 
-  // Crear el intérprete del modelo, asignando el modelo, las operaciones, el área de memoria, y el manejador de errores
-  static tflite::MicroInterpreter static_interpreter(
-    model, resolver, tensor_arena, kTensorArenaSize);
-  interpreter = &static_interpreter;
+AllOpsResolver es un objeto que registra (o "resuelve") todas las operaciones disponibles en TensorFlow Lite Micro.
 
-  // Asignar los tensores internos (reserva memoria en el tensor_arena)
-  TfLiteStatus allocate_status = interpreter->AllocateTensors();
-  if (allocate_status != kTfLiteOk) {
-    Serial.println("Fallo al asignar tensores");
-    return;
-  }
+Al usar AllOpsResolver, se incluyen prácticamente todos los kernels que TFLite Micro soporta, por lo que no tendrás que agregar manualmente las operaciones que requiera tu modelo.
 
-  // Obtener punteros directos al tensor de entrada y salida
-  input = interpreter->input(0);
-  output = interpreter->output(0);
+Sin embargo, si necesitas reducir el tamaño de tu binario (firmware) o no quieres incluir kernels que no se usan, podrías optar por MicroMutableOpResolver y añadir solo las operaciones necesarias.
 
-  Serial.println("Modelo cargado correctamente 🎉");
-}
+¿Qué operaciones están disponibles?
+El conjunto exacto de operaciones que se encuentran disponibles en AllOpsResolver puede variar según la versión de TensorFlow Lite Micro, pero generalmente incluye (entre otras):
 
-""", language='c')
+Aritméticas y activaciones
+- Add
+- Sub
+- Mul
+- Div
+- Relu
+- Relu6
+- LeakyRelu
+- PRelu
+- Logistic
+- Tanh
+- Sigmoid
+- HardSwish
+
+Convoluciones y capas de red neuronal
+- Conv2D
+- DepthwiseConv2D
+- FullyConnected
+- MaxPool2D
+- AveragePool2D
+- Conv3D (en versiones más recientes)
+
+Operaciones tensoriales y de forma (shape)
+- Concatenation
+- Reshape
+- ResizeBilinear
+- Pad / PadV2
+- StridedSlice
+- Transpose
+
+Operaciones de reducción
+- Mean
+- Sum
+- ReduceMax
+- ReduceMin
+
+Otras operaciones comunes
+- Softmax
+- ArgMax / ArgMin
+- Gather
+- Squeeze
+- ExpandDims
+- Slice
+
+Ten en cuenta que no todas estas operaciones estarán siempre disponibles en todas las versiones de TFLite Micro, y podrían existir más allá de esta lista según evoluciona la librería. Además, algunas de estas operaciones solo están disponibles si se definen ciertas banderas de compilación o si se añade soporte específico en la versión correspondiente.
+
+En la práctica, si necesitas algo más ligero que el resolver de todas las operaciones (AllOpsResolver), puedes utilizar MicroMutableOpResolver e incluir únicamente las operaciones realmente usadas por tu modelo. Esto permite minimizar el espacio en memoria que ocupa el binario en dispositivos muy restringidos."
+
+""")
+    
     
     st.markdown("### Función loop()")
     st.code(""" 
