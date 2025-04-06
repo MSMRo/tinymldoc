@@ -362,7 +362,7 @@ void loop() {
     st.markdown(
     """
     <div style="text-align: center;">
-        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/workflow_tinyml2.png" width="1050">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/workflow_tinyml3.png" width="1050">
     </div>
     <br>
     <br>
@@ -383,27 +383,55 @@ Para una mayor comprensión, la documentación oficial de la libreria para ardui
   - [link tensorflow](https://www.tensorflow.org/lite/microcontrollers?hl=es-419)
 """)
 
-    st.markdown("### Importación de las librerias de arduino")
+    st.markdown("### 2.3.1 Header+namespace")
+    st.markdown("""
+Se incluyen las cabeceras necesarias para usar TensorFlow Lite Micro (TensorFlowLite.h, micro_interpreter.h, etc.).
+
+La cabecera model.h es el modelo convertido a binario (usualmente con xxd) y luego incluido como arreglo de bytes para poderlo compilar directamente en el microcontrolador.
+
+- Se define un namespace anónimo para que las variables no colisionen con otros módulos. Esto hace que las variables sean visibles únicamente dentro de este archivo.
+
+- const tflite::Model* model apunta al modelo TFLite que se carga desde model.h.
+
+- tflite::MicroInterpreter* interpreter es el intérprete que ejecutará el modelo.
+
+- TfLiteTensor* input y TfLiteTensor* output apuntan a los tensores de entrada y salida del modelo.
+
+- int inference_count es un contador para llevar seguimiento del número de inferencias realizadas.
+
+- constexpr int kTensorArenaSize = 2000; define el tamaño de la arena de memoria (en bytes) donde se alojan los tensores durante la ejecución. Este tamaño puede ajustarse en función de la memoria disponible en el microcontrolador y de las necesidades del modelo.
+
+- alignas(16) uint8_t tensor_arena[kTensorArenaSize]; es el bloque de memoria alineado a 16 bytes, lo cual puede ser necesario para ciertos procesadores (por ejemplo, si se usa CMSIS o se requiere alineación específica para instrucciones SIMD).
+
+
+
+
+""")
     st.code(""" 
-// Inclusión de la cabecera principal de TensorFlow Lite para microcontroladores
 #include <TensorFlowLite.h>
+#include "model.h"  // tu modelo en formato .h convertido con xxd
 
-// Se incluye el modelo convertido a un arreglo C (formato .h generado con xxd o script en Python)
-#include "model.h"  // Este archivo contiene: const unsigned char model_tflite[] = {...};
-
-// Incluye clases para reportar errores de TFLite
 #include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
-
-// Intérprete para modelos TFLite en dispositivos con recursos limitados
 #include "tensorflow/lite/micro/micro_interpreter.h"
-
-// Para interpretar el modelo cargado (estructura interna del archivo .tflite)
 #include "tensorflow/lite/schema/schema_generated.h"
-
-// Resolver de operaciones: incluye todas las operaciones posibles de TFLite (puede ser pesado)
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 
+
+namespace {
+  const tflite::Model* model = nullptr;
+  tflite::MicroInterpreter* interpreter = nullptr;
+  TfLiteTensor* input = nullptr;
+  TfLiteTensor* output = nullptr;
+  int inference_count = 0;
+
+  constexpr int kTensorArenaSize = 2000;
+  // Keep aligned to 16 bytes for CMSIS
+  alignas(16) uint8_t tensor_arena[kTensorArenaSize];
+}  // namespace
+
 """, language='c')
+
+
     st.markdown("### Configuración de memoria para tensores")
     st.code(""" 
 // Tamaño del buffer de memoria donde se almacenarán los tensores del modelo
