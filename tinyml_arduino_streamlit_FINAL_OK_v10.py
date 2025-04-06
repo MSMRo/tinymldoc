@@ -22,7 +22,7 @@ st.markdown("""
 
 st.title("📘 Documentación TinyML con Arduino Nano 33 BLE Sense")
 
-st.sidebar.image("https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/comunidad_tinyml_per_logo.jpeg", use_column_width=True)
+st.sidebar.image("https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/comunidad_tinyml_per_logo.jpeg", use_container_width=False)
 
 section = st.sidebar.radio("📂 Navegación", [
     "Introducción",
