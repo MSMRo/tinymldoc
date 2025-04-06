@@ -435,28 +435,38 @@ namespace {
 """, language='c')
 
 
-    st.markdown("### 2.3.1 Obtener el modelo")
+    st.markdown("### 2.3.2 Obtener el modelo")
     st.markdown(
     """
     <div style="text-align: center;">
-        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/hn.png" width="400">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_059.png" width="400">
     </div>
     <br>
     <br>
     """,
     unsafe_allow_html=True
     )
+    st.markdown("""
+Aquí se llama a **tflite::GetModel** para interpretar el arreglo binario (almacenado en model_tflite) como un objeto de modelo de TensorFlow Lite.
+**model_tflite** es una variable que proviene de tu archivo model.h, donde se encuentra tu modelo TFLite incrustado como un arreglo de bytes.
+                
+ * Se verifica que la versión del modelo (model->version()) coincida con la versión del esquema TFLite (TFLITE_SCHEMA_VERSION).
+ * Si no coinciden, significa que el modelo se generó con una versión de TensorFlow Lite distinta a la que soporta la librería actual. Por eso se imprime un mensaje de error y se termina la ejecución de la función (con return), ya que no se podría ejecutar el modelo correctamente.
+""")
 
 
 
     st.code(""" 
-// Tamaño del buffer de memoria donde se almacenarán los tensores del modelo
-constexpr int kTensorArenaSize = 21 * 1024;  // 21 KB
-uint8_t tensor_arena[kTensorArenaSize];      // Memoria estática para los tensores
+// Cargar modelo
+  model = tflite::GetModel(model_tflite);
+  if (model->version() != TFLITE_SCHEMA_VERSION) {
+    Serial.println("Modelo incompatible con TFLite Micro");
+    return;
+  }
 
 """, language='c')
     
-    st.markdown("### Declaración de variables globales")
+    st.markdown("### 2.3.3 Seleccionar las operaciones de tensorflow en arduino")
     st.code(""" 
 tflite::MicroErrorReporter micro_error_reporter;     // Manejador de errores
 tflite::ErrorReporter* error_reporter = &micro_error_reporter;
