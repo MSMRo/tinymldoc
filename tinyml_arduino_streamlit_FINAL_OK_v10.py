@@ -548,7 +548,7 @@ En la práctica, si necesitas algo más ligero que el resolver de todas las oper
     st.markdown(
     """
     <div style="text-align: center;">
-        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_061.png" width="400">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/Selection_061.png" width="800">
     </div>
     <br>
     <br>
@@ -556,7 +556,7 @@ En la práctica, si necesitas algo más ligero que el resolver de todas las oper
     unsafe_allow_html=True
     )
     st.markdown("""
-# Interpretación del código para crear e inicializar el intérprete en TensorFlow Lite Micro
+#### Interpretación del código para crear e inicializar el intérprete en TensorFlow Lite Micro
 
 1. **Creación del intérprete**  
    Se instancia un objeto `MicroInterpreter` a partir del modelo (`model`), el *resolver* de operaciones (`resolver`), el bloque de memoria (`tensor_arena`) y su tamaño (`kTensorArenaSize`). Luego, este intérprete se asocia a la variable global `interpreter` para poder invocar sus métodos más adelante.
