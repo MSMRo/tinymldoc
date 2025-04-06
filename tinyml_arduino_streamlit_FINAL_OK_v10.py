@@ -383,11 +383,11 @@ Para una mayor comprensión, la documentación oficial de la libreria para ardui
   - [link tensorflow](https://www.tensorflow.org/lite/microcontrollers?hl=es-419)
 """)
 
-    st.markdown("### 2.3.1 Headers+namespace")
+    st.markdown("### 2.3.1 Importar los headers y  crear el namespace")
     st.markdown(
     """
     <div style="text-align: center;">
-        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/hn.png" width="450">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/hn.png" width="400">
     </div>
     <br>
     <br>
@@ -435,7 +435,20 @@ namespace {
 """, language='c')
 
 
-    st.markdown("### Configuración de memoria para tensores")
+    st.markdown("### 2.3.1 Obtener el modelo")
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/MSMRo/tinymldoc/refs/heads/main/img/hn.png" width="400">
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
+
+
+
     st.code(""" 
 // Tamaño del buffer de memoria donde se almacenarán los tensores del modelo
 constexpr int kTensorArenaSize = 21 * 1024;  // 21 KB
