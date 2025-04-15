@@ -54,6 +54,16 @@ if section == "Introducción":
     """,
     unsafe_allow_html=True
     )
+    st.markdown(
+    """
+    <div style="text-align: center;">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/CdcnQtP9EhM?si=8QWurfGgrZtvU6Xa" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <br>
+    <br>
+    """,
+    unsafe_allow_html=True
+    )
 
     st.markdown("""## 1. Documentación de la libreria de TensorFlow Lite Micro para Arduino nano 33 ble sense""")
     st.markdown("""
